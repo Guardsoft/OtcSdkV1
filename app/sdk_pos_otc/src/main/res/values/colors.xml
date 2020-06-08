@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Background color -->
+    <color name="colorPrimaryBackground">#ebebeb</color>
+
+        <color name="colorPrimary">#3F51B5</color>
+        <color name="colorPrimaryDark">#4080ca</color>
+        <color name="colorAccent">#ac11df</color>
+        <!--谈红色  用于首页调整点击变色-->
+        <color name="colorSmallRed">#faebeb</color>
+        <color name="colorTheme">#ffce3d3a</color>
+
+        <!-- Toolbar color -->
+        <color name="color_toolbar">#323438</color>
+        <!-- KeyBoard background -->
+        <color name="keyboard_background_color">#cccccc</color>
+
+
+        <!-- Trans Amount color -->
+        <color name="trans_amount_color">#FD4800</color>
+        <!-- unimportant text color -->
+        <color name="prompt_text_color">#858585</color>
+        <color name="textColor">#ff696969</color>
+        <color name="account_xian">#ffb1b5bb</color>
+        <color name="btn_gray_n">#8F9296</color>
+        <color name="btn_blue_p">#00A2FF</color>
+        <color name="btn_blue_n">#167EFB</color>
+
+        <!-- longin button color -->
+        <color name="login_btn_bg_color">#DB7D25</color>
+        <color name="login_btn_bg_pressed_color">#BE6D1E</color>
+
+        <!-- prompt -->
+        <color name="prompt_no_pwd_color">#666666</color>
+
+        <!-- version -->
+        <color name="prompt_version">#FF0000</color>
+        <color name="white">#FFFFFF</color>
+        <color name="TitleBackground">#1E82D2</color>
+        <!-- GridView color -->
+        <color name="grid_item_bg">#ffe8ecef</color>
+        <color name="line">#ffd3dde6</color>
+        <color name="common_text_color">#ff333333</color>
+        <color name="float_transparent">#00000000</color>
+
+        <!-- CustomKeyboard color -->
+        <color name="key_normal_color">#ffffff</color>
+        <color name="key_selected_color">#b8bcc0</color>
+        <color name="opkey_selected_color">#436EEE</color>
+        <color name="keyboard_bg_color">#5CACEE</color>
+        <color name="black">#000000</color>
+
+        <!-- CustomAlertDialog color -->
+        <color name="button_text_color">#000000</color>
+        <color name="blue_btn_bg_color">#AEDEF4</color>
+        <color name="blue_btn_bg_pressed_color">#96BFD2</color>
+        <color name="gray_btn_bg_pressed_color">#B6B6B6</color>
+        <color name="gray_btn_bg_color">#D0D0D0</color>
+        <color name="sweet_dialog_bg_color">#FFFFFF</color>
+        <color name="error_stroke_color">#FF0000</color>
+        <color name="success_stroke_color">#008B8B</color>
+        <color name="warning_stroke_color">#F8BB86</color>
+        <color name="text_color">#575757</color>
+        <color name="cancel_button_text">#333333</color>
+        <color name="mainmenu_text">#ffffffff</color>
+        <!-- 红紫色 -->
+        <color name="red">#FF0000</color>
+        <color name="gray_input_pin_bg">#DDDDDD</color>
+        <color name="tab">#90d7ec</color>
+
+        <!-- 输入框 -->
+        <color name="textview_infos">#ff666666</color>
+        <color name="textedit_hint">#999999</color>
+
+        <!-- PagerSlidingTab -->
+        <color name="background_tab_pressed">#88ebebeb</color>
+
+        <color name="updateBackground">#F2F3F5</color>
+
+
+        <color name="culqi_blue">#39207C</color>
+        <color name="culqi_green">#26D07C</color>
+
+        <color name="izipay_pink1">#EF3C4F</color>
+        <color name="izipay_pink2">#E02020</color>
+        <color name="vendemas_yellow">#FFC600</color>
+        <color name="bbva_blue">#005BA6</color>
+
+
+
+</resources>

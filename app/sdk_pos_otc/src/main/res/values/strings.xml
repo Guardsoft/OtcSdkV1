@@ -1,0 +1,78 @@
+<resources>
+    <string name="title_activity_test">TestActivity</string>
+
+    <string name="dialog_delete">&lt;</string>
+    <string name="dialog_clear">X</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">X</string>
+    <string name="err_password">Password Error</string>
+
+    <!--    <string name="dialog_delete">Delete</string>-->
+    <!--    <string name="dialog_clear">Clear</string>-->
+    <!--    <string name="dialog_ok">Enter</string>-->
+    <!--    <string name="dialog_cancel">Cancel</string>-->
+    <!--    <string name="err_password">Password Error</string>-->
+
+    <string name="prompt_trans_amount">Cantidad a pagar S/</string>
+    <string name="amount_default">0.00</string>
+
+    <string name="trans_sale">VENTA</string>
+    <string name="header_title">APPT</string>
+    <string name="ec_trans_amount">Transaction Amount:</string>
+    <string name="trans_amount">Transaction Amount</string>
+    <string name="detail_auth_code">Authorization code</string>
+    <string name="detail_trans_no">Serial number</string>
+    <string name="trans_oridate">Original transaction date</string>
+    <string name="prompt_use_bankcard">Please use your bank card</string>
+    <string name="prompt_card_num">Card number</string>
+    <string name="prompt_card_date">Card expiration date</string>
+    <string name="prompt_date_default">MM/YY</string>
+
+    <string name="view_aid">AID</string>
+    <string name="view_capk">CAPK</string>
+    <string name="view_version">About</string>
+    <string name="view_param">ViewParam</string>
+    <string name="app_version">About JEMVDemo</string>
+    <string name="trans_balance">Balance inquiry</string>
+    <string name="version">version number</string>
+    <string name="remove_card">Por favor, retire la tarjeta&#8230;</string>
+    <string name="see_phone">Please See Phone&#8230;</string>
+    <string name="detect_card_again">No se pudo leer la tarjeta, intente nuevamente</string>
+    <!--    <string name="entry_card_password">Please input the bank card password</string>-->
+    <string name="entry_card_password">Ingresar PIN</string>
+    <!--    <string name="without_password">Without a password, press the Enter key</string>-->
+    <string name="without_password">No tiene pin, presione la tecla Enter</string>
+    <string name="sale_success">Transaction Success</string>
+    <string name="transaction_date">transaction date</string>
+    <string name="skip">Skip</string>
+    <string name="amount">amount</string>
+    <string name="version1">JEMVDemo 1.00.08</string>
+    <string name="versionInfo">Copyright (C) 2017-? PAX Technology, Inc. All rights reserved.</string>
+    <string name="read_card_error">read card error</string>
+    <string name="title_activity_release_notes">ReleaseNotesActivity</string>
+    <string name="release_notes">Initial 1.00.08 version released.
+        \nSupport PayPass,PayWave,QPBOC,AMEX,and DPAS.
+    </string>
+
+    <string name="prompt_online">Procesamiento en línea...</string>
+    <string name="prompt_offline">Fuera de línea aprobado...</string>
+    <string name="prompt_not_remove_card">No quite la tarjeta</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="version_date">2018/02/24</string>
+    <string name="user_cancel">User Cancel</string>
+    <string name="password_time_out">Input password timeout</string>
+    <string name="title_activity_send_sms">SendSmsActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="hello_world">Hello Word</string>
+
+</resources>

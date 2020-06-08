@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_consume"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".flows.domain.usecase.pax.tradepaypw.ConsumeActivity">
+
+    <LinearLayout
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="80dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="!PASEMOS LA TARJETA¡"
+            android:textSize="25sp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="Inserta, desliza o acerca"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+        <ImageView
+            android:src="@drawable/ic_card_insert"
+            android:layout_marginTop="50dp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/trans_sale"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:paddingBottom="3dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/font_size_normal"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ec_trans_amount"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/font_size_normal"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:gravity="bottom"
+                android:text="￥"
+                android:textColor="@color/trans_amount_color"
+                android:textSize="@dimen/font_size_small" />
+            <TextView
+                android:id="@+id/tv_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.00"
+                android:textColor="@color/trans_amount_color"
+                android:textSize="@dimen/font_size_larger"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:typeface="sans"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/font_size_normal"
+            android:id="@+id/textView" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberPassword"
+            android:layout_marginTop="4dp"
+            android:maxLength="20"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:background="@drawable/shape_edit"
+            android:clickable="false"
+            android:textSize="@dimen/font_size_larger"
+            android:focusable="true"
+            android:password="true"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:text="@string/without_password"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/font_size_small"
+            android:id="@+id/textView2" />
+
+        <!--<com.pax.tradepaypw.view.SoftKeyboardPasswordStyle-->
+        <!--android:id="@+id/soft_keyboard_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_marginTop="70dp"-->
+        <!--android:background="@color/keyboard_background_color" />-->
+
+
+    </LinearLayout>
+
+</LinearLayout>

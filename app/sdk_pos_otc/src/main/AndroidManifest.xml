@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.otc.sdk.pos">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.pax.permission.MAGCARD" />
+    <uses-permission android:name="com.pax.permission.PED" />
+    <uses-permission android:name="com.pax.permission.ICC" />
+    <uses-permission android:name="com.pax.permission.PICC" />
+    <uses-permission android:name="com.pax.permission.PRINTER" />
+
+    <application
+        android:name="com.otc.sdk.pax.a920.OtcApplication">
+
+        <activity
+            android:name=".flows.domain.usecase.pax.tradepaypw.SwingCardActivity"
+            android:process="com.pax.detectCard"
+            android:screenOrientation="fullSensor" />
+        <activity
+            android:name=".flows.domain.usecase.pax.tradepaypw.ConsumeActivity"
+            android:process="com.pax.detectCard"
+            android:screenOrientation="fullSensor" />
+
+        <service
+            android:name=".flows.domain.usecase.pax.tradepaypw.service.OtherDetectCard"
+            android:enabled="true"
+            android:exported="true" />
+
+    </application>
+
+</manifest>

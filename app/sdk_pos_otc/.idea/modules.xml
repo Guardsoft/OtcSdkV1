@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../AppClienteOtc2.iml" filepath="$PROJECT_DIR$/../../AppClienteOtc2.iml" group="AppClienteOtc2" />
+      <module fileurl="file://$PROJECT_DIR$/../app.iml" filepath="$PROJECT_DIR$/../app.iml" group="AppClienteOtc2/app" />
+      <module fileurl="file://$PROJECT_DIR$/sdk_pos_otc.iml" filepath="$PROJECT_DIR$/sdk_pos_otc.iml" group="AppClienteOtc2/app/sdk_pos_otc" />
+    </modules>
+  </component>
+</project>
