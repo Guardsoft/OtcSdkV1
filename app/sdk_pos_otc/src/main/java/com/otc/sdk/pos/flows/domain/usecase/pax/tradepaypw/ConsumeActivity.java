@@ -58,18 +58,16 @@ public class ConsumeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_consume);
-//        soft_keyboard_view = (SoftKeyboardPasswordStyle) findViewById(R.id.soft_keyboard_view);
 
         tv_amount = (TextView) findViewById(R.id.tv_amount);
         Intent intent = getIntent();
         amount = intent.getStringExtra("amount");
         result = intent.getIntExtra("result", 0);
 
-
-        isOnlinePin = intent.getIntExtra("isOnlinePin", 1);
-        //Log.i("ConsumeActivity", "isOnlinePin = " + isOnlinePin );
+        isOnlinePin = intent.getIntExtra("isOnlinePin", 0);
+        Log.i("ConsumeActivity", "isOnlinePin = " + isOnlinePin );
         offlinePinLeftTimes = intent.getIntExtra("offlinePinLeftTimes", 0);
-        //Log.i("ConsumeActivity", "offlinePinLeftTimes = " + offlinePinLeftTimes );
+        Log.i("ConsumeActivity", "offlinePinLeftTimes = " + offlinePinLeftTimes );
         pan = intent.getStringExtra("pan");
 
         tv_amount.setText(amount);
@@ -92,6 +90,7 @@ public class ConsumeActivity extends AppCompatActivity {
 
         //   1 = CON PIN
         //   0 = SIN PIN
+
         Log.i(TAG, "onCreate: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         Log.i(TAG, "onCreate isOnlinePin: " + isOnlinePin);
 
@@ -130,7 +129,7 @@ public class ConsumeActivity extends AppCompatActivity {
                     GetPinEmv.getInstance().setPinData(data);
                     GetPinEmv.getInstance().setPinDataEncrypt(dataEncrypt);
                 }
-                if (SwingCardActivity.getReadType() == EReaderType.ICC) {
+                if (ReadCardActivity.getReadType() == EReaderType.ICC) {
                     dialog.dismiss();
 
                     ImplEmv.pinEnterReady();
@@ -150,7 +149,7 @@ public class ConsumeActivity extends AppCompatActivity {
                 Log.i("InputPwdDialog", "dialog onErr");
                 dialog.dismiss();
                 ImplEmv.pinEnterReady();
-                if (SwingCardActivity.getReadType() == EReaderType.ICC) {
+                if (ReadCardActivity.getReadType() == EReaderType.ICC) {
                     finish();
                 } else {
 //                    Intent intent1 = new Intent(ConsumeActivity.this, MainOtcActivity.class);

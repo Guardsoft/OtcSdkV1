@@ -3,7 +3,7 @@ package com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.pay.trans.action;
 import android.content.Context;
 import android.content.Intent;
 
-import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.SwingCardActivity;
+import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.ReadCardActivity;
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.abl.core.AAction;
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.pay.constant.EUIParamKeys;
 
@@ -169,7 +169,7 @@ public class ActionSearchCard extends AAction {
 
     @Override
     protected void process() {
-        Intent intent = new Intent(context, SwingCardActivity.class);
+        Intent intent = new Intent(context, ReadCardActivity.class);
         intent.putExtra(EUIParamKeys.NAV_TITLE.toString(), title);
         intent.putExtra(EUIParamKeys.NAV_BACK.toString(), true);
         intent.putExtra(EUIParamKeys.TRANS_AMOUNT.toString(), amount);

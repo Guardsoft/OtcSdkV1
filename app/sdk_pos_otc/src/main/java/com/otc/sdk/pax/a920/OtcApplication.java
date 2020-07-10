@@ -5,6 +5,7 @@ import android.app.Application;
 import android.util.Log;
 
 import com.otc.sdk.pax.a920.crypto.ICrypted;
+import com.otc.sdk.pos.flows.sources.server.models.response.initialize.InitializeResponse;
 import com.pax.dal.IDAL;
 import com.pax.neptunelite.api.NeptuneLiteUser;
 
@@ -12,13 +13,14 @@ import static com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.utils.FilePars
 
 public class OtcApplication extends Application {
 
-    private static final String TAG = "TradeApplication";
+    private static final String TAG = "OtcApplication";
     private static OtcApplication otcApplication;
     public final static String APP_VERSION = "V1.00.00";
 
     private static IDAL dal;
     private static IConvert convert;
     private static ICrypted crypted;
+    private static InitializeResponse initializeResponse;
 
     private boolean isDalEnabled = true;
 
@@ -40,6 +42,14 @@ public class OtcApplication extends Application {
 
     public void setDalEnabled(boolean dalEnabled) {
         isDalEnabled = dalEnabled;
+    }
+
+    public static InitializeResponse getInitializeResponse() {
+        return initializeResponse;
+    }
+
+    public static void setInitializeResponse(InitializeResponse value) {
+        initializeResponse = value;
     }
 
     public static OtcApplication getInstance() {
@@ -69,7 +79,7 @@ public class OtcApplication extends Application {
 
         parseAidFromAssets(this, "aid.ini");
         parseCapkFromAssets(this, "capk.ini");
-        Log.i(TAG, "init: ");
+        Log.i(TAG, "init: SUCCESS");
     }
 
     public void init(Activity activity) {

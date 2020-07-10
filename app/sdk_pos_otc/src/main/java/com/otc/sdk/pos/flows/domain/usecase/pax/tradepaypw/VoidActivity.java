@@ -12,7 +12,6 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -42,9 +41,13 @@ import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.service.OtherDetectCa
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.service.serviceReadType;
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.utils.FileParse;
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.utils.PromptMsg;
-import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.view.CustomEditText;
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.view.dialog.CustomAlertDialog;
-import com.otc.sdk.pos.flows.util.UtilOtc;
+import com.otc.sdk.pos.flows.sources.config.AuthorizeResponseHandler;
+import com.otc.sdk.pos.flows.sources.config.CustomError;
+import com.otc.sdk.pos.flows.sources.server.models.request.authorize.Order;
+import com.otc.sdk.pos.flows.sources.server.models.response.authorize.AuthorizeResponse;
+import com.otc.sdk.pos.flows.sources.server.rest.ProcessAuthorizeCallback;
+import com.otc.sdk.pos.flows.util.OtcUtil;
 import com.pax.dal.entity.EPiccType;
 import com.pax.dal.entity.EReaderType;
 import com.pax.dal.entity.PollingResult;
@@ -79,7 +82,7 @@ import java.util.Arrays;
 import static com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.utils.Utils.bcd2Str;
 import static com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.utils.Utils.str2Bcd;
 
-public class SwingCardActivity extends AppCompatActivity implements View.OnClickListener {
+public class VoidActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "SwingCardActivity";
 
     private static final int READ_CARD_CANCEL = 2; // 取消读卡
@@ -109,6 +112,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
     String trackData3;
 
     private String amount;
+    private Order orderClient;
 
     TextView tvTitle;
     ImageView headerBack;
@@ -120,8 +124,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
      * 支持的寻卡类型
      */
     private byte mode; // 寻卡模式
-//    private serviceReadType serReadType = serviceReadType.getInstance();
-    private serviceReadType serReadType = serviceReadType.getInstance();;
+    private serviceReadType serReadType = serviceReadType.getInstance();
 
     private int magRet;
 
@@ -173,7 +176,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
         Log.i(TAG, "starMagTrans: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
         pan = TrackUtils.getPan(trackData2);
-        trackData2_38 = UtilOtc.getTrack2(trackData2);
+        trackData2_38 = OtcUtil.getTrack2(trackData2);
         magRet = 0;
         showPan();
         Log.i(TAG, "magRet = " + magRet);
@@ -212,7 +215,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
                     public void run() {
                         Log.i(TAG, "Start showPan");
                         String exp = TrackUtils.getExpDate(trackData2);
-                        panDialog = new CustomAlertDialog(SwingCardActivity.this, CustomAlertDialog.SUCCESS_TYPE);
+                        panDialog = new CustomAlertDialog(VoidActivity.this, CustomAlertDialog.SUCCESS_TYPE);
                         panDialog.setTitleText(pan);
                         panDialog.setTimeout(60);
                         panDialog.setContentText(exp);
@@ -251,7 +254,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
 
 
         // para no pedir pinblock
-        emv = new ImplEmv(SwingCardActivity.this, false);
+        emv = new ImplEmv(VoidActivity.this, false);
 
         //para pedir pin
        // emv = new ImplEmv(SwingCardActivity.this);
@@ -290,19 +293,48 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
 
             Log.i(TAG, "startEmvTrans PinData: " + GetPinEmv.getInstance().getPinData());
             Log.i(TAG, "startEmvTrans strTrack2: " + strTrack2);
-            Log.i(TAG, "startEmvTrans strTrack2: " + UtilOtc.getTrack2(strTrack2));
+            Log.i(TAG, "startEmvTrans strTrack2: " + OtcUtil.getTrack2(strTrack2));
             Log.i(TAG, "startEmvTrans PinData: " + pan);
 
 
-            // retorna la lectura de la tarjeta
-            Intent returnIntent = new Intent();
-            returnIntent.putExtra("pan",pan);
-            returnIntent.putExtra("track2",UtilOtc.getTrack2(strTrack2));
-            returnIntent.putExtra("pinBlock", GetPinEmv.getInstance().getPinDataEncrypt());
-            returnIntent.putExtra("type","chip");
-            returnIntent.putExtra("pin", "60000");
-            setResult(RESULT_OK,returnIntent);
-            finish();
+            // retorna la lectura de la tarjeta-----------------------------------------------------
+
+            OtcUtil utils = new OtcUtil();
+            String emv = utils.getEmv();
+
+            Log.i(TAG, " ++++++++++  EMV:  " + emv);
+
+
+            runOnUiThread(() -> {
+                promptDialog = new CustomAlertDialog(VoidActivity.this, CustomAlertDialog.PROGRESS_TYPE);
+
+                promptDialog.show();
+                promptDialog.setCancelable(false);
+                promptDialog.setTitleText(getString(R.string.prompt_online));
+            });
+
+            ProcessAuthorizeCallback authorizeCallback = new ProcessAuthorizeCallback();
+            authorizeCallback.authorizationV2(this, OtcUtil.getTrack2(strTrack2), "chip", emv, orderClient, new AuthorizeResponseHandler() {
+                @Override
+                public void onSuccess(AuthorizeResponse response) {
+
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("success", response);
+                    setResult(RESULT_OK,returnIntent);
+                    finish();
+
+                }
+
+                @Override
+                public void onError(CustomError error) {
+
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("error", error);
+                    setResult(RESULT_CANCELED ,returnIntent);
+                    finish();
+
+                }
+            });
 
 
         } else {
@@ -320,7 +352,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        promptDialog = new CustomAlertDialog(SwingCardActivity.this, CustomAlertDialog.PROGRESS_TYPE);
+                        promptDialog = new CustomAlertDialog(VoidActivity.this, CustomAlertDialog.PROGRESS_TYPE);
 
                         promptDialog.show();
                         promptDialog.setCancelable(false);
@@ -458,7 +490,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void run() {
                 String msg = PromptMsg.getErrorMsg(ret);
-                final CustomAlertDialog dialog = new CustomAlertDialog(SwingCardActivity.this, CustomAlertDialog.ERROR_TYPE);
+                final CustomAlertDialog dialog = new CustomAlertDialog(VoidActivity.this, CustomAlertDialog.ERROR_TYPE);
                 dialog.setTitleText(msg);
                 dialog.show();
                 Device.beepErr();
@@ -550,7 +582,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
 
         Log.i(TAG, "startConlssPBOC: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
-        emv = new ImplEmv(SwingCardActivity.this);
+        emv = new ImplEmv(VoidActivity.this);
         emv.operation = "";
         emv.ulAmntAuth = entryPoint.getTransParam().ulAmntAuth;
         emv.amount = amount;
@@ -817,7 +849,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
         }
         //trk
         pan = TrackUtils.getPan(bcd2Str(tk2.data));
-        trackData2_38 = UtilOtc.getTrack2(bcd2Str(tk2.data));
+        trackData2_38 = OtcUtil.getTrack2(bcd2Str(tk2.data));
 
 
         //**********************
@@ -841,8 +873,6 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
             }
         }
 
-
-
     }
 
     private void toTradeResultActivity() {
@@ -854,7 +884,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        promptDialog = new CustomAlertDialog(SwingCardActivity.this, CustomAlertDialog.PROGRESS_TYPE);
+                        promptDialog = new CustomAlertDialog(VoidActivity.this, CustomAlertDialog.PROGRESS_TYPE);
 
                         promptDialog.show();
                         promptDialog.setCancelable(false);
@@ -895,15 +925,44 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
 
         //******************************************************************************************
 
-        // retorna la lectura de la tarjeta
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("pan",pan);
-        returnIntent.putExtra("track2",trackData2_38);
-        returnIntent.putExtra("pinBlock", GetPinEmv.getInstance().getPinDataEncrypt());
-        returnIntent.putExtra("type","contactless");
-        returnIntent.putExtra("pin", "40000");
-        setResult(RESULT_OK,returnIntent);
-        finish();
+
+        OtcUtil utils = new OtcUtil();
+        String emv = utils.getEmv();
+
+        Log.i(TAG, " ++++++++++  EMV:  " + emv);
+
+
+        runOnUiThread(() -> {
+            promptDialog = new CustomAlertDialog(VoidActivity.this, CustomAlertDialog.PROGRESS_TYPE);
+
+            promptDialog.show();
+            promptDialog.setCancelable(false);
+            promptDialog.setTitleText(getString(R.string.prompt_online));
+        });
+
+        ProcessAuthorizeCallback authorizeCallback = new ProcessAuthorizeCallback();
+        authorizeCallback.authorizationV2(this, trackData2_38, "contactless", emv, orderClient, new AuthorizeResponseHandler() {
+            @Override
+            public void onSuccess(AuthorizeResponse response) {
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("success", response);
+                setResult(RESULT_OK,returnIntent);
+                finish();
+
+            }
+
+            @Override
+            public void onError(CustomError error) {
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("error", error);
+                setResult(RESULT_CANCELED ,returnIntent);
+                finish();
+
+            }
+        });
+
 
     }
 
@@ -916,7 +975,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        promptDialog = new CustomAlertDialog(SwingCardActivity.this, CustomAlertDialog.PROGRESS_TYPE);
+                        promptDialog = new CustomAlertDialog(VoidActivity.this, CustomAlertDialog.PROGRESS_TYPE);
 
                         promptDialog.show();
                         promptDialog.setCancelable(false);
@@ -934,15 +993,43 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
 
         Log.i(TAG, "Start TradeResultActivity");
 
-        // retorna la lectura de la tarjeta
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("pan",pan);
-        returnIntent.putExtra("track2",trackData2_38);
-        returnIntent.putExtra("pinBlock", GetPinEmv.getInstance().getPinDataEncrypt());
-        returnIntent.putExtra("type","contactless");
-        returnIntent.putExtra("pin", "60000");
-        setResult(RESULT_OK,returnIntent);
-        finish();
+        // retorna la lectura de la tarjeta---------------------------------------------------------
+        OtcUtil utils = new OtcUtil();
+        String emv = utils.getEmv();
+
+        Log.i(TAG, " ++++++++++  EMV:  " + emv);
+
+
+        runOnUiThread(() -> {
+            promptDialog = new CustomAlertDialog(VoidActivity.this, CustomAlertDialog.PROGRESS_TYPE);
+
+            promptDialog.show();
+            promptDialog.setCancelable(false);
+            promptDialog.setTitleText(getString(R.string.prompt_online));
+        });
+
+        ProcessAuthorizeCallback authorizeCallback = new ProcessAuthorizeCallback();
+        authorizeCallback.authorizationV2(this, trackData2_38, "contactless", emv, orderClient, new AuthorizeResponseHandler() {
+            @Override
+            public void onSuccess(AuthorizeResponse response) {
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("success", response);
+                setResult(RESULT_OK,returnIntent);
+                finish();
+
+            }
+
+            @Override
+            public void onError(CustomError error) {
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("error", error);
+                setResult(RESULT_CANCELED ,returnIntent);
+                finish();
+
+            }
+        });
 
     }
 
@@ -950,7 +1037,7 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
 
         Log.i(TAG, "toConsumeActitivy: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
-        Intent intent = new Intent(SwingCardActivity.this, ConsumeActivity.class);
+        Intent intent = new Intent(VoidActivity.this, ConsumeActivity.class);
         intent.putExtra("amount", amount);
         intent.putExtra("pan", pan);
         intent.putExtra("result", result);
@@ -983,13 +1070,16 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bankcad_pay);
+        setContentView(R.layout.activity_authorize_sdk);
 
         initView();
 
         Intent intent = getIntent();
-        amount = intent.getStringExtra("amount");
 
+        orderClient = intent.getParcelableExtra("order");
+        amount = orderClient.getAmount() + "";
+
+        Log.i(TAG, "onCreate: " + orderClient.toString());
 
         headerBack.setOnClickListener(this);
 
@@ -998,9 +1088,9 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
 
         DeviceManager.getInstance().setIDevice(DeviceImplNeptune.getInstance());
 
-        Log.i(TAG, "readerType 1 = " + readerType.getEReaderType());
+        //Log.i(TAG, "readerType 1 = " + readerType.getEReaderType());
         initClssTrans();
-        Log.i(TAG, "readerType 2 = " + readerType.getEReaderType());
+        //Log.i(TAG, "readerType 2 = " + readerType.getEReaderType());
 
         iDetectCard = new Intent(this, OtherDetectCard.class);
         iDetectCard.putExtra("readType", readerType.getEReaderType());
@@ -1016,7 +1106,6 @@ public class SwingCardActivity extends AppCompatActivity implements View.OnClick
         layoutReadCulqi.setVisibility(View.VISIBLE);
         layoutReadIzipay.setVisibility(View.GONE);
         layoutReadVendemas.setVisibility(View.GONE);
-
     }
 
     private void initView() {

@@ -20,6 +20,9 @@ public class Header implements Parcelable {
 		responseCode = in.readInt();
 	}
 
+	public Header() {
+	}
+
 	public static final Creator<Header> CREATOR = new Creator<Header>() {
 		@Override
 		public Header createFromParcel(Parcel in) {

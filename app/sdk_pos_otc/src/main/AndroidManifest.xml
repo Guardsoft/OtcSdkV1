@@ -10,23 +10,33 @@
     <uses-permission android:name="com.pax.permission.PICC" />
     <uses-permission android:name="com.pax.permission.PRINTER" />
 
-    <application
-        android:name="com.otc.sdk.pax.a920.OtcApplication">
+    <application android:name="com.otc.sdk.pax.a920.OtcApplication">
+        <activity
+            android:name=".flows.domain.usecase.pax.tradepaypw.ReadCardActivity"
+            android:theme="@style/NoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:process="com.pax.detectCard"
+            android:screenOrientation="portrait" />
 
         <activity
-            android:name=".flows.domain.usecase.pax.tradepaypw.SwingCardActivity"
+            android:name=".flows.domain.usecase.pax.tradepaypw.QueryActivity"
             android:process="com.pax.detectCard"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".flows.domain.usecase.pax.tradepaypw.VoidActivity"
+            android:process="com.pax.detectCard"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".flows.domain.usecase.pax.tradepaypw.ConsumeActivity"
             android:process="com.pax.detectCard"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".flows.domain.usecase.pax.tradepaypw.service.OtherDetectCard"
             android:enabled="true"
             android:exported="true" />
-
     </application>
 
 </manifest>

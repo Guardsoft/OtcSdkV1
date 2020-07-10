@@ -6,7 +6,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.StringRequestListener;
-import com.otc.sdk.pos.flows.App;
+import com.otc.sdk.pos.flows.ConfSdk;
 import com.otc.sdk.pos.flows.sources.config.CustomError;
 import com.otc.sdk.pos.flows.sources.config.StringResponseHandler;
 import com.otc.sdk.pos.flows.sources.server.repository.AccessTokenApi;
@@ -33,18 +33,18 @@ public class AccessTokenRestImpl implements AccessTokenApi {
         String dominio = "https://culqimpos.quiputech.com/";
         String tenant = "culqi";
 
-        if (!App.endpoint.equals("")) {
-            dominio = App.endpoint;
+        if (!ConfSdk.endpoint.equals("")) {
+            dominio = ConfSdk.endpoint;
         }
 
-        if (!App.tenant.equals("")) {
-            tenant = App.tenant;
+        if (!ConfSdk.tenant.equals("")) {
+            tenant = ConfSdk.tenant;
         }
 
         OkHttpClient client = new OkHttpClient.Builder().authenticator(new Authenticator() {
             @Override
             public Request authenticate(Route route, okhttp3.Response response) {
-                String credential = Credentials.basic(App.username, App.password);
+                String credential = Credentials.basic(ConfSdk.username, ConfSdk.password);
                 return response.request().newBuilder().header("Authorization", credential).build();
             }
         }).build();

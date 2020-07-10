@@ -1,31 +1,50 @@
 package com.otc.sdk.pos.flows.sources.server.models.response.authorize;
 
-import com.google.gson.annotations.SerializedName;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class AuthorizeResponse {
+public class AuthorizeResponse implements Parcelable{
 
-	@SerializedName("customFields")
-	private CustomFields customFields;
-
-	@SerializedName("header")
+	//private CustomFields customFields;
 	private Header header;
-
-	@SerializedName("merchant")
 	private Merchant merchant;
-
-	@SerializedName("device")
 	private Device device;
-
-	@SerializedName("order")
 	private Order order;
 
-	public void setCustomFields(CustomFields customFields){
-		this.customFields = customFields;
+	public AuthorizeResponse() {
 	}
 
-	public CustomFields getCustomFields(){
-		return customFields;
+	protected AuthorizeResponse(Parcel in) {
+		header = in.readParcelable(Header.class.getClassLoader());
+		merchant = in.readParcelable(Merchant.class.getClassLoader());
+		device = in.readParcelable(Device.class.getClassLoader());
+		order = in.readParcelable(Order.class.getClassLoader());
 	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeParcelable(header, flags);
+		dest.writeParcelable(merchant, flags);
+		dest.writeParcelable(device, flags);
+		dest.writeParcelable(order, flags);
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	public static final Creator<AuthorizeResponse> CREATOR = new Creator<AuthorizeResponse>() {
+		@Override
+		public AuthorizeResponse createFromParcel(Parcel in) {
+			return new AuthorizeResponse(in);
+		}
+
+		@Override
+		public AuthorizeResponse[] newArray(int size) {
+			return new AuthorizeResponse[size];
+		}
+	};
 
 	public void setHeader(Header header){
 		this.header = header;
@@ -63,11 +82,11 @@ public class AuthorizeResponse {
  	public String toString(){
 		return 
 			"AuthorizeResponse{" +
-			"customFields = '" + customFields + '\'' + 
 			",header = '" + header + '\'' + 
 			",merchant = '" + merchant + '\'' + 
 			",device = '" + device + '\'' + 
 			",order = '" + order + '\'' + 
 			"}";
 		}
+
 }

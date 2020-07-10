@@ -1,16 +1,21 @@
 package com.otc.sdk.pos.flows.sources.server.rest;
 
+import android.util.Log;
+
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.ParsedRequestListener;
-import com.otc.sdk.pos.flows.App;
+import com.otc.sdk.pos.flows.ConfSdk;
 import com.otc.sdk.pos.flows.sources.config.CustomError;
 import com.otc.sdk.pos.flows.sources.config.ObjectResponseHandler;
-import com.otc.sdk.pos.flows.sources.server.models.request.AuthorizeRequest;
+import com.otc.sdk.pos.flows.sources.server.models.request.authorize.AuthorizeRequest;
 import com.otc.sdk.pos.flows.sources.server.models.response.authorize.AuthorizeResponse;
 import com.otc.sdk.pos.flows.sources.server.repository.AuthorizeApi;
+import com.otc.sdk.pos.flows.util.OtcUtil;
 import com.otc.sdk.pos.flows.util.SdkLog;
+
+import java.util.Map;
 
 /**
  * Created by foxit on 11/24/17.
@@ -18,25 +23,36 @@ import com.otc.sdk.pos.flows.util.SdkLog;
 
 public class AuthorizeRestImpl implements AuthorizeApi {
 
+    private static final String TAG = "AuthorizeRestImpl";
+
     @Override
     public <T> void authorize(AuthorizeRequest request, final ObjectResponseHandler handler) {
 
         String dominio = "https://culqimpos.quiputech.com/";
         String tenant = "culqi";
 
-        if (!App.endpoint.equals("")) {
-            dominio = App.endpoint;
+        if (!ConfSdk.endpoint.equals("")) {
+            dominio = ConfSdk.endpoint;
         }
 
-        if (!App.tenant.equals("")) {
-            tenant = App.tenant;
+        if (!ConfSdk.tenant.equals("")) {
+            tenant = ConfSdk.tenant;
         }
+
+        // ------------------------------------  HEADERS -------------------------------------------
+        Map<String, String> headerMap = null;
+        try {
+            headerMap = OtcUtil.getSignatureRequest(request);
+        } catch (Exception e) {
+            Log.e(TAG, e.getLocalizedMessage(), e);
+        }
+        // ------------------------------------  HEADERS -------------------------------------------
 
         AndroidNetworking.post(dominio + "api.authorization/v3/" + tenant + "/authorize")
-                .addHeaders("Content-Type", "application/json")
-                .addHeaders("Authorization", "storage")
-                .addApplicationJsonBody(request)
-                .setTag("Authorize")
+                .setContentType("application/json;charset=utf-8")
+                .addHeaders(headerMap)
+                .addStringBody(OtcUtil.toJsonPretty(request))
+                .setTag(this)
                 .setPriority(Priority.HIGH)
                 .build()
                 .getAsObject(AuthorizeResponse.class, new ParsedRequestListener<AuthorizeResponse>() {

@@ -20,7 +20,7 @@ import android.util.Log;
 import com.otc.sdk.pos.flows.domain.usecase.pax.jemv.clssentrypoint.model.EntryOutParam;
 import com.otc.sdk.pos.flows.domain.usecase.pax.jemv.clssentrypoint.model.TransResult;
 import com.otc.sdk.pos.flows.domain.usecase.pax.jemv.clssentrypoint.trans.ClssEntryPoint;
-import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.SwingCardActivity;
+import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.ReadCardActivity;
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.pay.trans.callback.TransCallback;
 import com.pax.jemv.clcommon.ACType;
 import com.pax.jemv.clcommon.ByteArray;
@@ -170,9 +170,9 @@ public class ClssPayWave {
 
         int ret;
 
-        SwingCardActivity.prnTime("waveFlowBegin Clss_SetFinalSelectData_Wave strat time = ");
+        ReadCardActivity.prnTime("waveFlowBegin Clss_SetFinalSelectData_Wave strat time = ");
         ret = ClssWaveApi.Clss_SetFinalSelectData_Wave(outParam.sDataOut, outParam.iDataLen);
-        SwingCardActivity.prnTime("waveFlowBegin Clss_SetFinalSelectData_Wave time = ");
+        ReadCardActivity.prnTime("waveFlowBegin Clss_SetFinalSelectData_Wave time = ");
         if (ret != RetCode.EMV_OK) {
             Log.e(TAG, "ClssWaveApi.clssWaveSetFinalSelectData(outParam.sDataOut, outParam.iDataLen) error, ret = " + ret);
             return ret;
@@ -180,9 +180,9 @@ public class ClssPayWave {
 
         Clss_ReaderParam szReaderParam = new Clss_ReaderParam();
 
-        SwingCardActivity.prnTime("waveFlowBegin Clss_GetReaderParam_Wave strat time = ");
+        ReadCardActivity.prnTime("waveFlowBegin Clss_GetReaderParam_Wave strat time = ");
         ret = ClssWaveApi.Clss_GetReaderParam_Wave(szReaderParam);
-        SwingCardActivity.prnTime("waveFlowBegin Clss_GetReaderParam_Wave time = ");
+        ReadCardActivity.prnTime("waveFlowBegin Clss_GetReaderParam_Wave time = ");
         //Log.i("WaveGetReaderParam", "ret = " + ret);
         if (ret != RetCode.EMV_OK) {
             Log.e(TAG, "ClssWaveApi.WaveGetReaderParam(szReaderParam) error, ret = " + ret);
@@ -197,9 +197,9 @@ public class ClssPayWave {
         szReaderParam.aucTmTransCur = new byte[]{(byte) 0x08, (byte) 0x40};
         szReaderParam.ucTmTransCurExp = 0x02;
         //Gillian end
-        SwingCardActivity.prnTime("waveFlowBegin Clss_SetReaderParam_Wave strat time = ");
+        ReadCardActivity.prnTime("waveFlowBegin Clss_SetReaderParam_Wave strat time = ");
         ret = ClssWaveApi.Clss_SetReaderParam_Wave(szReaderParam);
-        SwingCardActivity.prnTime("waveFlowBegin Clss_SetReaderParam_Wave time = ");
+        ReadCardActivity.prnTime("waveFlowBegin Clss_SetReaderParam_Wave time = ");
         if (ret != RetCode.EMV_OK) {
             Log.e(TAG, "ClssWaveApi.Clss_SetReaderParam_Wave(szReaderParam) error, ret = " + ret);
             return ret;
@@ -219,15 +219,15 @@ public class ClssPayWave {
         szSchemeIDInfo[2].ucSchemeID = (byte) SCHEME_VISA_MSD_20;
         szSchemeIDInfo[2].ucSupportFlg = (byte) 1;
 
-        SwingCardActivity.prnTime("waveFlowBegin Clss_SetRdSchemeInfo_Wave strat time = ");
+        ReadCardActivity.prnTime("waveFlowBegin Clss_SetRdSchemeInfo_Wave strat time = ");
         ClssWaveApi.Clss_SetRdSchemeInfo_Wave((byte) 3, szSchemeIDInfo);
-        SwingCardActivity.prnTime("waveFlowBegin Clss_SetRdSchemeInfo_Wave time = ");
+        ReadCardActivity.prnTime("waveFlowBegin Clss_SetRdSchemeInfo_Wave time = ");
 
         //TODO:for test
         ByteArray proID = new ByteArray();
 //		ret = ClssWaveApi.clssWaveSetTLVData((short) 0x9F5A, "123".getBytes(), 3);
         ClssWaveApi.Clss_GetTLVData_Wave((short) 0x9F5A, proID);
-        SwingCardActivity.prnTime("waveFlowBegin Clss_GetTLVData_Wave 0x9F5A time = ");
+        ReadCardActivity.prnTime("waveFlowBegin Clss_GetTLVData_Wave 0x9F5A time = ");
 
         if (proID.length != 0) {
             if (procInfo != null) {
@@ -236,7 +236,7 @@ public class ClssPayWave {
                         procInfo.ucRdClssFLmtFlg, procInfo.ucRdClssTxnLmtFlg, procInfo.ucRdCVMLmtFlg,
                         procInfo.ucTermFLmtFlg, procInfo.ucStatusCheckFlg, (byte) 0, new byte[4]);
                 ret = ClssWaveApi.Clss_SetDRLParam_Wave(stDRLParam);
-                SwingCardActivity.prnTime("waveFlowBegin Clss_SetDRLParam_Wave time = ");
+                ReadCardActivity.prnTime("waveFlowBegin Clss_SetDRLParam_Wave time = ");
                 if (ret != RetCode.EMV_OK) {
                     Log.e(TAG, "ClssWaveApi.clssWaveSetDRLParam(stDRLParam) error, ret = " + ret);
                     return ret;
@@ -246,9 +246,9 @@ public class ClssPayWave {
         }
 
         if (visaAidParam != null) {
-            SwingCardActivity.prnTime("waveFlowBegin Clss_SetVisaAidParam_Wave strat time = ");
+            ReadCardActivity.prnTime("waveFlowBegin Clss_SetVisaAidParam_Wave strat time = ");
             ret = ClssWaveApi.Clss_SetVisaAidParam_Wave(visaAidParam);
-            SwingCardActivity.prnTime("waveFlowBegin Clss_SetVisaAidParam_Wave time = ");
+            ReadCardActivity.prnTime("waveFlowBegin Clss_SetVisaAidParam_Wave time = ");
             if (ret != RetCode.EMV_OK) {
                 return ret;
             }
@@ -256,18 +256,18 @@ public class ClssPayWave {
 
         if (transParam != null) {
             ClssWaveApi.Clss_SetTLVData_Wave((short) 0x9c, new byte[]{transParam.ucTransType}, 1);
-            SwingCardActivity.prnTime("waveFlowBegin Clss_SetTransData_Wave strat time = ");
+            ReadCardActivity.prnTime("waveFlowBegin Clss_SetTransData_Wave strat time = ");
             ret = ClssWaveApi.Clss_SetTransData_Wave(transParam, interInfo);
-            SwingCardActivity.prnTime("waveFlowBegin Set Clss_SetTransData_Wave time = ");
+            ReadCardActivity.prnTime("waveFlowBegin Set Clss_SetTransData_Wave time = ");
             if (ret != RetCode.EMV_OK) {
                 Log.e(TAG, "ClssWaveApi.Clss_SetTransData_Wave(transParam, interInfo) error, ret = " + ret);
                 return ret;
             }
         }
 
-        SwingCardActivity.prnTime("waveFlowBegin Clss_Proctrans_Wave strat time = ");
+        ReadCardActivity.prnTime("waveFlowBegin Clss_Proctrans_Wave strat time = ");
         ret = ClssWaveApi.Clss_Proctrans_Wave(transPath, actype);
-        SwingCardActivity.prnTime("waveFlowBegin Clss_Proctrans_Wave time = ");
+        ReadCardActivity.prnTime("waveFlowBegin Clss_Proctrans_Wave time = ");
         if (ret != RetCode.EMV_OK) {
             Log.e(TAG, "ClssWaveApi.Clss_Proctrans_Wave(transPath, actype) error, ret = " + ret);
         }

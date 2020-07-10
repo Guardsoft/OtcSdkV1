@@ -1,26 +1,40 @@
 package com.otc.sdk.pos.flows.sources.server.models.response.authorize;
 
-import com.google.gson.annotations.SerializedName;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Header{
+public class Header implements Parcelable {
 
-	@SerializedName("externalId")
 	private String externalId;
-
-	@SerializedName("responseMessage")
 	private String responseMessage;
-
-	@SerializedName("transactionDate")
 	private long transactionDate;
-
-	@SerializedName("millis")
 	private int millis;
-
-	@SerializedName("transactionId")
 	private String transactionId;
-
-	@SerializedName("responseCode")
 	private int responseCode;
+
+	public Header() {
+	}
+
+	protected Header(Parcel in) {
+		externalId = in.readString();
+		responseMessage = in.readString();
+		transactionDate = in.readLong();
+		millis = in.readInt();
+		transactionId = in.readString();
+		responseCode = in.readInt();
+	}
+
+	public static final Creator<Header> CREATOR = new Creator<Header>() {
+		@Override
+		public Header createFromParcel(Parcel in) {
+			return new Header(in);
+		}
+
+		@Override
+		public Header[] newArray(int size) {
+			return new Header[size];
+		}
+	};
 
 	public void setExternalId(String externalId){
 		this.externalId = externalId;
@@ -82,4 +96,19 @@ public class Header{
 			",responseCode = '" + responseCode + '\'' + 
 			"}";
 		}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(externalId);
+		dest.writeString(responseMessage);
+		dest.writeLong(transactionDate);
+		dest.writeInt(millis);
+		dest.writeString(transactionId);
+		dest.writeInt(responseCode);
+	}
 }

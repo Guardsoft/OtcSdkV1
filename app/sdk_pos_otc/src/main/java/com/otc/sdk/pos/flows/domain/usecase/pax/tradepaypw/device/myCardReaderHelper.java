@@ -5,7 +5,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.otc.sdk.pax.a920.OtcApplication;
-import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.SwingCardActivity;
+import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.ReadCardActivity;
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.service.serviceReadType;
 import com.pax.dal.IIcc;
 import com.pax.dal.IMag;
@@ -275,9 +275,9 @@ public class myCardReaderHelper {
                 //SwingCardActivity.prnTime("piccInternal.detect start ");
                 // for A920C+ terminal, if picc reader closed, then here will throw exception, so catch this exception, and keep thread alive.
                 try {
-                    SwingCardActivity.prnTime("piccInternal.detect start timse = ");
+                    ReadCardActivity.prnTime("piccInternal.detect start timse = ");
                     PiccCardInfo info = piccInternal.detect(EDetectMode.EMV_AB);
-                    SwingCardActivity.prnTime("piccInternal.detect diff = ");
+                    ReadCardActivity.prnTime("piccInternal.detect diff = ");
                     //Log.i(TAG, "piccInternal.detect Finish " );
                     if (info != null) {
                         PollingResult result = new PollingResult();

@@ -13,8 +13,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.otc.sdk.pax.a920.OtcApplication;
 import com.otc.sdk.pos.R;
-import com.otc.sdk.pos.flows.domain.usecase.pax.app.TradeApplication;
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.GetPinEmv;
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.ImplEmv;
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.device.Device;
@@ -55,7 +55,7 @@ public class InputPwdDialog extends Dialog {
 //    private SoftKeyboardPosStyle softKeyboard;
 //    private static final byte ICC_SLOT = 0x00;
 //    public static final String OFFLINE_EXP_PIN_LEN = "0,4,5,6,7,8,9,10,11,12";
-    private IPed ped = TradeApplication.getDal().getPed(EPedType.INTERNAL);
+    private IPed ped = OtcApplication.getDal().getPed(EPedType.INTERNAL);
 
     public InputPwdDialog(Context context, Handler handler, int length, String title, String prompt) {
         this(context, R.style.popup_dialog);
@@ -303,7 +303,7 @@ public class InputPwdDialog extends Dialog {
                         if (pindata == null || pindata.length == 0)
                             listener.onSucc(null, "");
                         else {
-                            listener.onSucc(TradeApplication.getConvert().bcdToStr(pindata), pindataEncrypt);
+                            listener.onSucc(OtcApplication.getConvert().bcdToStr(pindata), pindataEncrypt);
                         }
                     }
                 } catch (final PedDevException e) {
@@ -363,8 +363,8 @@ public class InputPwdDialog extends Dialog {
 
     private String pinBlockToAes(byte[] pindata) {
 
-        Log.i(TAG, "run pindata: " + TradeApplication.getConvert().bcdToStr(pindata));
-        String pinBlockClaro = Device.decrypt3DesECB(TradeApplication.getConvert().bcdToStr(pindata), 5);
+        Log.i(TAG, "run pindata: " + OtcApplication.getConvert().bcdToStr(pindata));
+        String pinBlockClaro = Device.decrypt3DesECB(OtcApplication.getConvert().bcdToStr(pindata), 5);
 
         Log.i(TAG, "pinBlockClaro: " + pinBlockClaro);
 

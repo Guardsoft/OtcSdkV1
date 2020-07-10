@@ -16,6 +16,7 @@ import com.pax.dal.entity.ECryptOperate;
 import com.pax.dal.entity.ECryptOpt;
 import com.pax.dal.entity.EDUKPTPinMode;
 import com.pax.dal.entity.EPedKeyType;
+import com.pax.dal.entity.EPedMacMode;
 import com.pax.dal.entity.EPedType;
 import com.pax.dal.entity.EPinBlockMode;
 import com.pax.dal.exceptions.PedDevException;
@@ -496,5 +497,19 @@ public class Device {
             Log.w("writeTAK", e);
         }
         return false;
+    }
+
+    public static byte[] getMacRetail(int keyindexTak, byte[] value){
+
+        IPed ped = OtcApplication.getDal().getPed(EPedType.INTERNAL);
+        try {
+            byte[] bytesMode02 = ped.getMac((byte) keyindexTak, value, EPedMacMode.MODE_02);
+            Log.i("getMacRetail:MODE_02 = " + keyindexTak, OtcApplication.getConvert().bcdToStr(bytesMode02));
+
+            return bytesMode02;
+        } catch (PedDevException e) {
+            Log.e("getMacRetail:slot"+ keyindexTak, e.toString());
+        }
+        return null;
     }
 }

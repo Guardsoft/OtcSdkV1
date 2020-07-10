@@ -1,12 +1,9 @@
 package com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.device;
 
-
-//import com.pax.ipp.service.aidl.Exceptions;
-
 import android.util.Log;
 
-import com.otc.sdk.pos.flows.domain.usecase.pax.app.IConvert;
-import com.otc.sdk.pos.flows.domain.usecase.pax.app.TradeApplication;
+import com.otc.sdk.pax.a920.IConvert;
+import com.otc.sdk.pax.a920.OtcApplication;
 import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.pay.Constants;
 import com.pax.dal.IPed;
 import com.pax.dal.entity.DUKPTResult;
@@ -33,16 +30,16 @@ public class Device {
      * beep 成功
      */
     public static void beepOk() {
-        TradeApplication.getDal().getSys().beep(EBeepMode.FREQUENCE_LEVEL_3, 100);
-        TradeApplication.getDal().getSys().beep(EBeepMode.FREQUENCE_LEVEL_4, 100);
-        TradeApplication.getDal().getSys().beep(EBeepMode.FREQUENCE_LEVEL_5, 100);
+        OtcApplication.getDal().getSys().beep(EBeepMode.FREQUENCE_LEVEL_3, 100);
+        OtcApplication.getDal().getSys().beep(EBeepMode.FREQUENCE_LEVEL_4, 100);
+        OtcApplication.getDal().getSys().beep(EBeepMode.FREQUENCE_LEVEL_5, 100);
     }
 
     /**
      * beep 失败
      */
     public static void beepErr() {
-        TradeApplication.getDal().getSys().beep(EBeepMode.FREQUENCE_LEVEL_6, 200);
+        OtcApplication.getDal().getSys().beep(EBeepMode.FREQUENCE_LEVEL_6, 200);
     }
 
     /**
@@ -50,14 +47,14 @@ public class Device {
      */
 
     public static void beepPromt() {
-        TradeApplication.getDal().getSys().beep(EBeepMode.FREQUENCE_LEVEL_6, 50);
+        OtcApplication.getDal().getSys().beep(EBeepMode.FREQUENCE_LEVEL_6, 50);
     }
 
 
     public static boolean writeTMK(byte[] tmkValue) {
         // write TMK
         try {
-            TradeApplication.getDal().getPed(EPedType.INTERNAL).writeKey(EPedKeyType.TLK, (byte) 0,
+            OtcApplication.getDal().getPed(EPedType.INTERNAL).writeKey(EPedKeyType.TLK, (byte) 0,
                     EPedKeyType.TMK, Constants.INDEX_TMK,
                     tmkValue, ECheckMode.KCV_NONE, null);
             return true;
@@ -74,7 +71,7 @@ public class Device {
             if (tpkKcv == null || tpkKcv.length == 0) {
                 checkMode = ECheckMode.KCV_NONE;
             }
-            TradeApplication.getDal().getPed(EPedType.INTERNAL).writeKey(EPedKeyType.TMK, Constants.INDEX_TMK,
+            OtcApplication.getDal().getPed(EPedType.INTERNAL).writeKey(EPedKeyType.TMK, Constants.INDEX_TMK,
                     EPedKeyType.TPK, Constants.INDEX_TPK, tpkValue, checkMode, tpkKcv);
             return true;
         } catch (PedDevException e) {
@@ -86,7 +83,7 @@ public class Device {
     public static boolean writeTIKFuc(byte[] keyValue, byte[] ksn) {
         // write TIK
         try {
-            TradeApplication.getDal().getPed(EPedType.INTERNAL).writeTIK(Constants.INDEX_TIK, (byte) 0,
+            OtcApplication.getDal().getPed(EPedType.INTERNAL).writeTIK(Constants.INDEX_TIK, (byte) 0,
                     keyValue, ksn, ECheckMode.KCV_NONE, null);
             return true;
         } catch (PedDevException e) {
@@ -104,7 +101,7 @@ public class Device {
      * @throws PedDevException
      */
     public static byte[] getPinBlock(String panBlock) throws PedDevException {
-        IPed ped = TradeApplication.getDal().getPed(EPedType.INTERNAL);
+        IPed ped = OtcApplication.getDal().getPed(EPedType.INTERNAL);
 //        String supportSm = TradeApplication.sysParam.get(SysParam.SUPPORT_SM);
 //        if (supportSm.equals(SysParam.Constant.YES)) { // 国密
 //            return ped.getPinBlockSM4(Constants.INDEX_TPK, "0,4,5,6,7,8,9,10,11,12", panBlock.getBytes(),
@@ -121,7 +118,7 @@ public class Device {
     }
 
     public static DUKPTResult getDUKPTPin(String panBlock) throws PedDevException {
-        IPed ped = TradeApplication.getDal().getPed(EPedType.INTERNAL);
+        IPed ped = OtcApplication.getDal().getPed(EPedType.INTERNAL);
 
         return ped.getDUKPTPin(Constants.INDEX_TIK, "0,4,5,6,7,8,9,10,11,12", panBlock.getBytes(),
                 EDUKPTPinMode.ISO9564_0_INC, 60 * 1000);
@@ -137,17 +134,17 @@ public class Device {
         int ENCRYPT_CBC = 3;
 
         try {
-            byte [] valueByte = TradeApplication.getConvert()
+            byte [] valueByte = OtcApplication.getConvert()
                     .strToBcd(value, IConvert.EPaddingPosition.PADDING_LEFT);
 
-            byte [] result =  TradeApplication.getDal().getPed(EPedType.INTERNAL)
+            byte [] result =  OtcApplication.getDal().getPed(EPedType.INTERNAL)
                     .calcDes(
                             (byte)indexTDK,
                             null,
                             valueByte,
                             (byte)DECRYPT_ECB);
 
-            return TradeApplication.getConvert().bcdToStr(result);
+            return OtcApplication.getConvert().bcdToStr(result);
         } catch (PedDevException e) {
             Log.w("writeTMK", e);
         }
@@ -159,10 +156,10 @@ public class Device {
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; //init vector of CBC
 
         try {
-            byte [] valueByte = TradeApplication.getConvert()
+            byte [] valueByte = OtcApplication.getConvert()
                     .strToBcd(value, IConvert.EPaddingPosition.PADDING_LEFT);
 
-            byte [] result =  TradeApplication.getDal()
+            byte [] result =  OtcApplication.getDal()
                     .getPed(EPedType.INTERNAL)
                     .calcAes(
                             (byte)indexTAES,
@@ -171,7 +168,7 @@ public class Device {
                             ECryptOperate.ENCRYPT,
                             ECryptOpt.CBC);
 
-            return TradeApplication.getConvert().bcdToStr(result);
+            return OtcApplication.getConvert().bcdToStr(result);
         } catch (PedDevException e) {
             Log.w("writeTMK", e);
         }
@@ -191,17 +188,17 @@ public class Device {
         int ENCRYPT_CBC = 3;
 
         try {
-            byte [] valueByte = TradeApplication.getConvert()
+            byte [] valueByte = OtcApplication.getConvert()
                     .strToBcd(value, IConvert.EPaddingPosition.PADDING_LEFT);
 
-            byte [] result =  TradeApplication.getDal().getPed(EPedType.INTERNAL)
+            byte [] result =  OtcApplication.getDal().getPed(EPedType.INTERNAL)
                     .calcDes(
                             (byte)indexTDK,
                             initVector,
                             valueByte,
                             (byte)DECRYPT_CBC);
 
-            return TradeApplication.getConvert().bcdToStr(result);
+            return OtcApplication.getConvert().bcdToStr(result);
         } catch (PedDevException e) {
             Log.w("writeTMK", e);
         }
@@ -218,17 +215,17 @@ public class Device {
         int ENCRYPT_CBC = 3;
 
         try {
-            byte [] valueByte = TradeApplication.getConvert()
+            byte [] valueByte = OtcApplication.getConvert()
                     .strToBcd(value, IConvert.EPaddingPosition.PADDING_LEFT);
 
-            byte [] result =  TradeApplication.getDal().getPed(EPedType.INTERNAL)
+            byte [] result =  OtcApplication.getDal().getPed(EPedType.INTERNAL)
                     .calcDes(
                             (byte)indexTDK,
                             null,
                             valueByte,
                             (byte)ENCRYPT_ECB);
 
-            return TradeApplication.getConvert().bcdToStr(result);
+            return OtcApplication.getConvert().bcdToStr(result);
         } catch (PedDevException e) {
             Log.w("writeTMK", e);
         }
@@ -238,7 +235,7 @@ public class Device {
     public static boolean writeTAESK2(int indexTmk, int indexTAesk , byte[] tpkValue) {
 //***
         try {
-            TradeApplication.getDal()
+            OtcApplication.getDal()
                     .getPed(EPedType.INTERNAL)
                     .writeAesKey(
                             EPedKeyType.TMK,
@@ -257,7 +254,7 @@ public class Device {
     public static boolean writeTAESK3(int indexTAesk , byte[] tpkValue) {
 //***
         try {
-            TradeApplication.getDal()
+            OtcApplication.getDal()
                     .getPed(EPedType.INTERNAL)
                     .writeAesKey(
                             EPedKeyType.TLK,
@@ -276,7 +273,7 @@ public class Device {
 
     public static boolean writeTPK2(int tmkIndex, int tpkIndex, byte[] tpkValue) {
         try {
-            TradeApplication.getDal()
+            OtcApplication.getDal()
                     .getPed(EPedType.INTERNAL)
                     .writeKey(
                             EPedKeyType.TMK,
@@ -295,10 +292,10 @@ public class Device {
 
     public static byte[] getKCV_TPK(byte keyIndex) {
 
-        IPed ped = TradeApplication.getDal().getPed(EPedType.INTERNAL);
+        IPed ped = OtcApplication.getDal().getPed(EPedType.INTERNAL);
         try {
             byte[] bytes_tdk = ped.getKCV(EPedKeyType.TPK, keyIndex, (byte) 0, byte_test);
-            Log.i("getKCV_TPK:slot"+ keyIndex, TradeApplication.getConvert().bcdToStr(bytes_tdk));
+            Log.i("getKCV_TPK:slot"+ keyIndex, OtcApplication.getConvert().bcdToStr(bytes_tdk));
             return bytes_tdk;
         } catch (PedDevException e) {
             e.printStackTrace();
@@ -310,7 +307,7 @@ public class Device {
     public static boolean writeTDK(int tmkIndex, int tdkIndex, byte[] tdkValue) {
         // write TMK
         try {
-            TradeApplication.getDal().getPed(EPedType.INTERNAL)
+            OtcApplication.getDal().getPed(EPedType.INTERNAL)
                     .writeKey(
                             EPedKeyType.TMK,
                             (byte) tmkIndex,
@@ -329,10 +326,10 @@ public class Device {
 
     public static byte[] getKCV_TDK(byte keyIndex) {
 
-        IPed ped = TradeApplication.getDal().getPed(EPedType.INTERNAL);
+        IPed ped = OtcApplication.getDal().getPed(EPedType.INTERNAL);
         try {
             byte[] bytes_tdk = ped.getKCV(EPedKeyType.TDK, keyIndex, (byte) 0, byte_test);
-            Log.i("getKCV_TDK:slot"+ keyIndex, TradeApplication.getConvert().bcdToStr(bytes_tdk));
+            Log.i("getKCV_TDK:slot"+ keyIndex, OtcApplication.getConvert().bcdToStr(bytes_tdk));
             return bytes_tdk;
         } catch (PedDevException e) {
             e.printStackTrace();
@@ -346,10 +343,10 @@ public class Device {
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; //init vector of CBC
 
         try {
-            byte [] valueByte = TradeApplication.getConvert()
+            byte [] valueByte = OtcApplication.getConvert()
                     .strToBcd(value, IConvert.EPaddingPosition.PADDING_LEFT);
 
-            byte [] result =  TradeApplication.getDal()
+            byte [] result =  OtcApplication.getDal()
                     .getPed(EPedType.INTERNAL)
                     .calcAes(
                             (byte)indexTAES,
@@ -358,7 +355,7 @@ public class Device {
                             ECryptOperate.ENCRYPT,
                             ECryptOpt.CBC);
 
-            return TradeApplication.getConvert().bcdToStr(result);
+            return OtcApplication.getConvert().bcdToStr(result);
         } catch (PedDevException e) {
             Log.w("writeTMK", e);
         }
@@ -369,9 +366,9 @@ public class Device {
     public static boolean writeTLK(byte[] tlkValue) {
 
         try {
-            TradeApplication.getDal().getPed(EPedType.EXTERNAL_TYPEA).setExMode(0x07);
+            OtcApplication.getDal().getPed(EPedType.EXTERNAL_TYPEA).setExMode(0x07);
 
-            TradeApplication.getDal().getPed(EPedType.INTERNAL).writeKey(
+            OtcApplication.getDal().getPed(EPedType.INTERNAL).writeKey(
                     EPedKeyType.TLK,
                     (byte) 0,
                     EPedKeyType.TLK,
@@ -388,7 +385,7 @@ public class Device {
 
     public static boolean cleanKeys() {
         try {
-            TradeApplication.getDal().getPed(EPedType.INTERNAL).erase();
+            OtcApplication.getDal().getPed(EPedType.INTERNAL).erase();
             return true;
         } catch (PedDevException e) {
             Log.w(TAG, e);
@@ -398,14 +395,14 @@ public class Device {
 
 
     public static byte[] getKCV_TLK() {
-        IPed ped = TradeApplication.getDal().getPed(EPedType.INTERNAL);
+        IPed ped = OtcApplication.getDal().getPed(EPedType.INTERNAL);
         try {
             byte[] bytes_tlk = ped.getKCV(
                     EPedKeyType.TLK,
                     (byte) 1,
                     (byte) 0,
                     byte_test);
-            Log.i("getKCV_TLK:slot" + 1, TradeApplication.getConvert().bcdToStr(bytes_tlk));
+            Log.i("getKCV_TLK:slot" + 1, OtcApplication.getConvert().bcdToStr(bytes_tlk));
             return bytes_tlk;
         } catch (PedDevException e) {
             e.printStackTrace();
@@ -417,9 +414,9 @@ public class Device {
     public static boolean writeTMK2(int tmkIndex, byte[] tmkValue) {
         // write TMK
         try {
-            TradeApplication.getDal().getPed(EPedType.EXTERNAL_TYPEA).setExMode(0x77);
+            OtcApplication.getDal().getPed(EPedType.EXTERNAL_TYPEA).setExMode(0x77);
 
-            TradeApplication.getDal().getPed(EPedType.INTERNAL).writeKey(
+            OtcApplication.getDal().getPed(EPedType.INTERNAL).writeKey(
                     EPedKeyType.TLK,
                     (byte) 1,
                     EPedKeyType.TMK,
@@ -435,10 +432,10 @@ public class Device {
     }
 
     public static byte[] getKCV_TMK(byte keyIndex) {
-        IPed ped = TradeApplication.getDal().getPed(EPedType.INTERNAL);
+        IPed ped = OtcApplication.getDal().getPed(EPedType.INTERNAL);
         try {
             byte[] bytes_tmk = ped.getKCV(EPedKeyType.TMK, keyIndex, (byte) 0, byte_test);
-            Log.i("getKCV_TMK:slot" + keyIndex, TradeApplication.getConvert().bcdToStr(bytes_tmk));
+            Log.i("getKCV_TMK:slot" + keyIndex, OtcApplication.getConvert().bcdToStr(bytes_tmk));
             return bytes_tmk;
         } catch (PedDevException e) {
             e.printStackTrace();
@@ -452,7 +449,7 @@ public class Device {
         try {
             //FinancialApplication.getDal().getPed(EPedType.EXTERNAL_TYPEA).setExMode(0x77);
 
-            TradeApplication.getDal().getPed(EPedType.INTERNAL).writeKey(
+            OtcApplication.getDal().getPed(EPedType.INTERNAL).writeKey(
                     EPedKeyType.TMK,
                     (byte) tmkIndex,
                     EPedKeyType.TDK,

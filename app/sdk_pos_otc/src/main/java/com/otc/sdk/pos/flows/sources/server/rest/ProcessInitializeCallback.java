@@ -5,8 +5,7 @@ import android.content.Context;
 import com.androidnetworking.AndroidNetworking;
 import com.otc.sdk.pax.a920.OtcApplication;
 import com.otc.sdk.pax.a920.crypto.device.Device;
-import com.otc.sdk.pos.flows.App;
-import com.otc.sdk.pos.flows.domain.usecase.pax.app.TradeApplication;
+import com.otc.sdk.pos.flows.ConfSdk;
 import com.otc.sdk.pos.flows.sources.config.CustomError;
 import com.otc.sdk.pos.flows.sources.config.InitializeResponseHandler;
 import com.otc.sdk.pos.flows.sources.config.ObjectResponseHandler;
@@ -17,7 +16,6 @@ import com.otc.sdk.pos.flows.sources.server.repository.AccessTokenApi;
 import com.otc.sdk.pos.flows.sources.server.repository.InitializeApi;
 import com.otc.sdk.pos.flows.sources.server.repository.ProcessInitializeApi;
 import com.otc.sdk.pos.flows.util.OtcUtil;
-import com.otc.sdk.pos.flows.util.SdkLog;
 import com.otc.sdk.pos.flows.sources.server.models.request.Header;
 import com.otc.sdk.pos.flows.sources.server.models.request.InitializeRequest;
 import com.otc.sdk.pos.flows.sources.server.models.response.initialize.InitializeResponse;
@@ -62,14 +60,14 @@ public class ProcessInitializeCallback extends CallbackRest implements ProcessIn
         DeviceIni device = new DeviceIni();
         device.setSerialNumber(serialNumber);
 
-        if (App.initializeKeys) {
+        if (ConfSdk.initializeKeys) {
             device.setReloadKeys(true);
         }else{
             device.setReloadKeys(false);
         }
 
-        if(!App.serialNumberTest.equals("")){
-            device.setSerialNumber(App.serialNumberTest);
+        if(!ConfSdk.serialNumberTest.equals("")){
+            device.setSerialNumber(ConfSdk.serialNumberTest);
         }
 
         final InitializeRequest request = new InitializeRequest();
@@ -89,13 +87,22 @@ public class ProcessInitializeCallback extends CallbackRest implements ProcessIn
                         if (response.getKeys() != null) {
 
                             writeKeysWork(
-                                    response.getKeys().getEwkDataHex(), App.keyData,
-                                    response.getKeys().getEwkPinHex(), App.keyPin,
-                                    response.getKeys().getEwkMacSignature(), App.keyMac);
+                                    response.getKeys().getEwkDataHex(), ConfSdk.keyData,
+                                    response.getKeys().getEwkPinHex(), ConfSdk.keyPin,
+                                    response.getKeys().getEwkMacSignature(), ConfSdk.keyMac);
                         }
 
-                        //clear keys
+                        Storage.saveMerchantId(context, response.getMerchant().getMerchantId());
+                        Storage.saveTerminalId(context, response.getDevice().getTerminalId());
+
+                        com.otc.sdk.pos.flows.sources.server.models.response.initialize.Header header
+                                = new com.otc.sdk.pos.flows.sources.server.models.response.initialize.Header();
+                        header.setResponseCode(response.getHeader().getResponseCode());
+                        header.setResponseMessage(response.getHeader().getResponseMessage());
+
+                        response.setHeader(header);
                         response.setKeys(null);
+                        response.setDevice(null);
                         handler.onSuccess(response);
                     }
 
@@ -119,53 +126,6 @@ public class ProcessInitializeCallback extends CallbackRest implements ProcessIn
 
     }
 
-
-    private void writeKeysDataPin(String data, String pin) {
-
-        // write key data***************************************************************************
-        String decryptInit = Device.decrypt3DesCBC(data, 1);
-        String llaveReencriptada = Device.encrypt3DesEBC(decryptInit, 1);
-
-        int slotTMK = 1;
-        int slotDataTAESK10 = 15;
-
-        byte[] bytesTDKData10 = OtcApplication
-                .getConvert()
-                .strToBcd(llaveReencriptada, EPaddingPosition.PADDING_LEFT);
-
-        Device.writeTAESK2(slotTMK,slotDataTAESK10, bytesTDKData10);
-        //*****************************************************************************************
-
-        String decryptInitPin = Device.decrypt3DesCBC(pin, 1);
-
-        String llaveTpkClaro = decryptInit.substring(0,32);
-
-        String llaveReencriptadaPin = Device.encrypt3DesEBC(decryptInitPin, 1);
-
-        int slotDataTAESK11 = 16;
-
-        byte[] bytesTDKPin11 = OtcApplication
-                .getConvert()
-                .strToBcd(llaveReencriptadaPin, EPaddingPosition.PADDING_LEFT);
-
-        Device.writeTAESK2(slotTMK,slotDataTAESK11, bytesTDKPin11);
-        //******************************************************************************************
-
-//        int slotTPK = 2;
-//        String llaveTPK = Device.encrypt3DesEBC(llaveTpkClaro, 1);
-//
-//        byte[] bytesTPK = OtcApplication
-//                .getConvert()
-//                .strToBcd(llaveTPK, IConvert.EPaddingPosition.PADDING_LEFT);
-//
-//        // usar para capturar el pin
-//        Device.writeTPK2(slotTMK,slotTPK, bytesTPK);
-//
-//        Device.getKCV_TPK((byte)slotTPK);
-        //**************************************************************************
-
-    }
-
     private void writeKeysWork(String data, int slotData,
                                String pin, int slotPin,
                                String signature, int slotMac) {
@@ -178,21 +138,21 @@ public class ProcessInitializeCallback extends CallbackRest implements ProcessIn
                 .getConvert()
                 .strToBcd(data, EPaddingPosition.PADDING_LEFT);
 
-        Device.writeTDK2(App.keyTmk, slotData, bytesTdkData);
+        Device.writeTDK2(ConfSdk.keyTmk, slotData, bytesTdkData);
         //******************************************************************************************
 
         byte[] bytesTpkPin = OtcApplication
                 .getConvert()
                 .strToBcd(pin, EPaddingPosition.PADDING_LEFT);
 
-        Device.writeTPK2(App.keyTmk, slotPin, bytesTpkPin);
+        Device.writeTPK2(ConfSdk.keyTmk, slotPin, bytesTpkPin);
         //******************************************************************************************
 
         byte[] bytesTakSignature = OtcApplication
                 .getConvert()
                 .strToBcd(signature, EPaddingPosition.PADDING_LEFT);
 
-        Device.writeTAK(App.keyTmk, slotMac, bytesTakSignature);
+        Device.writeTAK(ConfSdk.keyTmk, slotMac, bytesTakSignature);
     }
 
 

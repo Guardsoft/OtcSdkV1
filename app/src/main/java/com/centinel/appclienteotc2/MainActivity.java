@@ -1,32 +1,40 @@
 package com.centinel.appclienteotc2;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.otc.sdk.pax.a920.OtcApplication;
-import com.otc.sdk.pos.flows.App;
-import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.SwingCardActivity;
+import com.otc.sdk.pos.flows.ConfSdk;
 import com.otc.sdk.pos.flows.sources.config.CustomError;
 import com.otc.sdk.pos.flows.sources.config.InitializeResponseHandler;
-import com.otc.sdk.pos.flows.sources.server.models.request.AuthorizeRequest;
+import com.otc.sdk.pos.flows.sources.config.QueryResponseHandler;
+import com.otc.sdk.pos.flows.sources.server.models.request.authorize.Order;
+import com.otc.sdk.pos.flows.sources.server.models.response.authorize.AuthorizeResponse;
 import com.otc.sdk.pos.flows.sources.server.models.response.initialize.InitializeResponse;
+import com.otc.sdk.pos.flows.sources.server.models.response.retrieve.RetrieveResponse;
 import com.otc.sdk.pos.flows.sources.server.rest.ProcessInitializeCallback;
+import com.otc.sdk.pos.flows.sources.server.rest.ProcessRetrieveListCallback;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.Scroller;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private LinearLayout layoutProgress;
-    int ACTIVITY_READ_CARD = 1001;
+
+    ConfSdk confsdk;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         layoutProgress = findViewById(R.id.layout_progress);
+
+        confsdk = new ConfSdk();
 
     }
 
@@ -63,22 +73,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void initialization(View view) {
 
-        App.endpoint = "https://culqimpos.quiputech.com/";
-        //App.tenant = "culqi";
-        App.tenant = "cajatrujillo";
+        ConfSdk.endpoint = "https://culqimpos.quiputech.com/";
+        ConfSdk.tenant = "culqi";
 
-        App.username = "integracion@otcperu.com";
-        App.password = "Peru2019$$";
-
-        // recargar llaves
-        App.initializeKeys = true;
+        ConfSdk.username = "integracion@otcperu.com";
+        ConfSdk.password = "Peru2019$$";
 
         //llave master
-        //App.keyTmk = 1; // default
+        ConfSdk.keyTmk = 1; // default
         //llaves
-        App.keyData = 10;
-        App.keyPin = 10;
-        App.keyMac = 10;
+        ConfSdk.keyData = 10;
+        ConfSdk.keyPin = 10;
+        ConfSdk.keyMac = 10;
 
         layoutProgress.setVisibility(View.VISIBLE);
 
@@ -89,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(InitializeResponse response) {
                 layoutProgress.setVisibility(View.GONE);
                 Log.i(TAG, "onSuccess: " + response);
+                ShowMessage(response.toString());
+
             }
 
             @Override
@@ -101,61 +109,92 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void signature(){
-        OtcApplication.getCrypted().getMacSignature("payload");
-    }
+    public void query(View view) {
 
+        layoutProgress.setVisibility(View.VISIBLE);
 
-    private void actionAuthorization(Intent data){
+        ProcessRetrieveListCallback callback = new ProcessRetrieveListCallback();
+        callback.retrieveList(this, 1 , 100, new QueryResponseHandler() {
+            @Override
+            public void onSuccess(RetrieveResponse response) {
 
-        String pan = data.getStringExtra("pan");
-        String track2 = data.getStringExtra("track2");
-        String pinBlock = data.getStringExtra("pinBlock");
-        String type = data.getStringExtra("type");
-        String pin = data.getStringExtra("pin");
+                layoutProgress.setVisibility(View.GONE);
+                Log.i(TAG, "onSuccess: " + response);
+                ShowMessage(response.toString());
 
-        Log.i(TAG, "actionAuthorization: PAN " + pan);
-        Log.i(TAG, "actionAuthorization: track2 " + track2);
-        Log.i(TAG, "actionAuthorization: pinBlock " + pinBlock);
-        Log.i(TAG, "actionAuthorization: type " + type);
-        Log.i(TAG, "actionAuthorization: pin " + pin);
+            }
 
+            @Override
+            public void onError(CustomError error) {
 
-        AuthorizeRequest request = new AuthorizeRequest();
-
-//        ProcessAuthorizeCallback authorizeCallback = new ProcessAuthorizeCallback();
-//        authorizeCallback.authorization(this, request, new StringResponseHandler() {
-//            @Override
-//            public void onSuccess(String response) {
-//
-//                Log.i(TAG, "onSuccess: " + response);
-//
-//            }
-//
-//            @Override
-//            public void onError(CustomError error) {
-//
-//                Log.i(TAG, "onError: " + error.getMessage());
-//
-//            }
-//        });
+                layoutProgress.setVisibility(View.GONE);
+                Log.i(TAG, "error: " + error);
+                ShowMessage(error.toString());
+            }
+        });
 
     }
+
+    public void authorization(View view) {
+
+        Order order = new Order();
+        order.setPurchaseNumber("20200710101");
+        order.setAmount(35.00);
+        order.setCurrency("PEN");
+        order.setCountable(true);
+
+        confsdk.processAuthorize(this, order);
+    }
+
+    public void voidOrder(View view) {
+
+        Order order = new Order();
+        order.setPurchaseNumber("20200710101");
+        order.setAmount(35.00);
+        order.setCurrency("PEN");
+        order.setCountable(true);
+
+        confsdk.processVoidOrder(this, order);
+    }
+
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-            if (requestCode == ACTIVITY_READ_CARD) {
 
-                if (resultCode == RESULT_OK) {
-                    actionAuthorization(data);
-                }
-
-                if (resultCode == RESULT_CANCELED) {
-                    Log.i(TAG, "onActivityResult: READ CARD CANCELADO -----------------------");
-                }
+        if (requestCode == ConfSdk.ACTIVITY_SDK_QUERY) {
+            if (resultCode == RESULT_OK && data != null) {
+                RetrieveResponse resultData = (RetrieveResponse) data.getExtras().getParcelable(ConfSdk.SUCCESS);
+                ShowMessage(resultData.toString());
             }
+            if (resultCode == RESULT_CANCELED && data != null) {
+                CustomError resultData = (CustomError) data.getExtras().getParcelable(ConfSdk.ERROR);
+                ShowMessage(resultData.toString());
+            }
+        }
     }
+
+
+    private void ShowMessage(String msg) {
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("OTC - DEMO")
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .show();
+        TextView textView = (TextView) dialog.findViewById(android.R.id.message);
+        textView.setScroller(new Scroller(this));
+        textView.setVerticalScrollBarEnabled(true);
+        textView.setMovementMethod(new ScrollingMovementMethod());
+
+    }
+
+
 }

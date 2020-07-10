@@ -1,6 +1,11 @@
 package com.otc.sdk.pos.flows;
 
 
+import android.app.Activity;
+import android.content.Intent;
+
+import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.ReadCardActivity;
+import com.otc.sdk.pos.flows.sources.server.models.request.authorize.Order;
 import com.otc.sdk.pos.flows.util.UIHelper;
 
 import java.util.Map;
@@ -8,13 +13,18 @@ import java.util.Map;
 /**
  * Created by foxit on 12/02/18.
  */
-public class App {
+public class ConfSdk {
 
     //request codes
     public static final int AUTHORIZE = 5000;
     public static final int INITIALIZE = 4000;
-    public static final String KEY_SUCCESS = "keySuccess";
-    public static final String KEY_ERROR = "keyError";
+
+    public static final int ACTIVITY_SDK_AUTHORIZATION = 5001;
+    public static final int ACTIVITY_SDK_VOID_CANCEL = 5002;
+    public static final int ACTIVITY_SDK_QUERY = 5003;
+
+    public static final String SUCCESS = "success";
+    public static final String ERROR = "error";
 
     public static Channel channel;
     public static boolean countable = true;
@@ -28,7 +38,7 @@ public class App {
     public static boolean showAmount;
     public static String endpoint = "";
     public static String tenant = "";
-    public static boolean initializeKeys = false;
+    public static boolean initializeKeys = true;
     public static String serialNumberTest = "";
 
 
@@ -51,15 +61,27 @@ public class App {
     public static int keyMac = -1;
     public static int keyTmk = 1; //default
 
-//    public static void authorization(Activity activity, Map<String, Object> data, VisaNetViewAuthorizationCustom custom) throws Exception {
-//        parseData(data);
-//        VisaNetAuthorizationActivity.startVisaNet(activity, amount, custom);
-//    }
-//
-//    public static void authorization(Activity activity, Map<String, Object> data) throws Exception {
-//        parseData(data);
-//        VisaNetAuthorizationActivity.startVisaNet(activity, amount);
-//    }
+
+    public void processAuthorize(Activity activity, Order order){
+        Intent intent = new Intent(activity, ReadCardActivity.class);
+        intent.putExtra("order", order);
+        intent.putExtra("process", "authorize");
+        activity.startActivityForResult(intent, ACTIVITY_SDK_AUTHORIZATION);
+    }
+
+    public void processQuery(Activity activity){
+        Intent intent = new Intent(activity, ReadCardActivity.class);
+        intent.putExtra("process", "query");
+        activity.startActivityForResult(intent, ACTIVITY_SDK_QUERY);
+    }
+
+    public void processVoidOrder(Activity activity, Order order){
+        Intent intent = new Intent(activity, ReadCardActivity.class);
+        intent.putExtra("order", order);
+        intent.putExtra("process", "voidOrder");
+        activity.startActivityForResult(intent, ACTIVITY_SDK_VOID_CANCEL);
+    }
+
 
     private static void parseData(Map<String, Object> data) throws Exception {
 

@@ -21,7 +21,7 @@
 #-renamesourcefileattribute SourceFile
 -keep class com.pax.** { *; }
 -keep class com.otc.sdk.pax.** { *; }
--keep class com.otc.sdk.pos.flows.App { *; }
+-keep class com.otc.sdk.pos.flows.ConfSdk { *; }
 -keep class com.otc.sdk.pos.flows.sources.config.** { *; }
 -keep class com.otc.sdk.pos.flows.sources.server.rest.ProcessInitializeCallback { *; }
 -keep class com.otc.sdk.pos.flows.sources.server.models.** { *; }

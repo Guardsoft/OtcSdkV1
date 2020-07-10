@@ -18,7 +18,7 @@ package com.otc.sdk.pos.flows.domain.usecase.pax.jemv.clssentrypoint.trans;
 import android.util.Log;
 
 import com.otc.sdk.pos.flows.domain.usecase.pax.jemv.clssentrypoint.model.EntryOutParam;
-import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.SwingCardActivity;
+import com.otc.sdk.pos.flows.domain.usecase.pax.tradepaypw.ReadCardActivity;
 import com.pax.jemv.clcommon.ByteArray;
 import com.pax.jemv.clcommon.ClssTmAidList;
 import com.pax.jemv.clcommon.Clss_PreProcInfo;
@@ -191,9 +191,9 @@ public class ClssEntryPoint {
         //SwingCardActivity.prnTime("entryProcess term process ");
 
         //Application selection
-        SwingCardActivity.prnTime("entryProcess Clss_AppSlt_Entry start time = ");
+        ReadCardActivity.prnTime("entryProcess Clss_AppSlt_Entry start time = ");
         ret = ClssEntryApi.Clss_AppSlt_Entry(0, 0);
-        SwingCardActivity.prnTime("preEntryProcess Clss_AppSlt_Entry time = ");
+        ReadCardActivity.prnTime("preEntryProcess Clss_AppSlt_Entry time = ");
         if (ret != RetCode.EMV_OK) {
             if (ret == RetCode.ICC_CMD_ERR)
                 return RetCode.CLSS_TRY_AGAIN;
@@ -214,9 +214,9 @@ public class ClssEntryPoint {
         KernType kernType = new KernType();
         ByteArray dataOut = new ByteArray();
 
-        SwingCardActivity.prnTime("preEntryProcess Clss_FinalSelect_Entry start time = ");
+        ReadCardActivity.prnTime("preEntryProcess Clss_FinalSelect_Entry start time = ");
         ret = ClssEntryApi.Clss_FinalSelect_Entry(kernType, dataOut);
-        SwingCardActivity.prnTime("preEntryProcess Clss_FinalSelect_Entry time = ");
+        ReadCardActivity.prnTime("preEntryProcess Clss_FinalSelect_Entry time = ");
         if (ret != RetCode.EMV_OK) {
             if (ret == RetCode.ICC_CMD_ERR) {
                 return RetCode.CLSS_TRY_AGAIN;
@@ -236,15 +236,15 @@ public class ClssEntryPoint {
         outParam.ucKernType = kernType.kernType;
         System.arraycopy(dataOut.data, 0, outParam.sAID, 0, dataOut.length);
         outParam.iAIDLen = dataOut.length;
-        SwingCardActivity.prnTime("preEntryProcess Clss_GetPreProcInterFlg_Entry start time = ");
+        ReadCardActivity.prnTime("preEntryProcess Clss_GetPreProcInterFlg_Entry start time = ");
         ret = ClssEntryApi.Clss_GetPreProcInterFlg_Entry(interInfo);
-        SwingCardActivity.prnTime("preEntryProcess Clss_GetPreProcInterFlg_Entry time = ");
+        ReadCardActivity.prnTime("preEntryProcess Clss_GetPreProcInterFlg_Entry time = ");
         if (ret != RetCode.EMV_OK) {
             return ret;
         }
-        SwingCardActivity.prnTime("preEntryProcess Clss_GetFinalSelectData_Entry start time = ");
+        ReadCardActivity.prnTime("preEntryProcess Clss_GetFinalSelectData_Entry start time = ");
         ret = ClssEntryApi.Clss_GetFinalSelectData_Entry(dataOut);
-        SwingCardActivity.prnTime("preEntryProcess Clss_GetFinalSelectData_Entry time = ");
+        ReadCardActivity.prnTime("preEntryProcess Clss_GetFinalSelectData_Entry time = ");
         if (ret != RetCode.EMV_OK) {
             return ret;
         }

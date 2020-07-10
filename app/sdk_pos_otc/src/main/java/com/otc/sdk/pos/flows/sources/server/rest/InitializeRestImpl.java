@@ -7,7 +7,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.ParsedRequestListener;
-import com.otc.sdk.pos.flows.App;
+import com.otc.sdk.pos.flows.ConfSdk;
 import com.otc.sdk.pos.flows.sources.config.CustomError;
 import com.otc.sdk.pos.flows.sources.config.ObjectResponseHandler;
 import com.otc.sdk.pos.flows.sources.local.storage.Storage;
@@ -30,12 +30,12 @@ public class InitializeRestImpl implements InitializeApi {
         String dominio = "https://culqimpos.quiputech.com/";
         String tenant = "culqi";
 
-        if (!App.endpoint.equals("")) {
-            dominio = App.endpoint;
+        if (!ConfSdk.endpoint.equals("")) {
+            dominio = ConfSdk.endpoint;
         }
 
-        if (!App.tenant.equals("")) {
-            tenant = App.tenant;
+        if (!ConfSdk.tenant.equals("")) {
+            tenant = ConfSdk.tenant;
         }
 
         Log.i(TAG, "api initialize: " + request.toString());

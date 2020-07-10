@@ -497,9 +497,9 @@ public class DeviceImplNeptune implements IDevice, TickTimer.TickTimerListener {
         Log.i("piccIsoCommandDevice", "apduSend = " + bcd2Str(apduSend.command));
         Log.i("piccIsoCommandDevice", "Data = " + bcd2Str(apduSend.dataIn));
         try {
-            SwingCardActivity.prnTime("waveFlowBegin isoCommandByApdu strat time = ");
+            ReadCardActivity.prnTime("waveFlowBegin isoCommandByApdu strat time = ");
             ApduRespInfo resp = picc.isoCommandByApdu(iccSlot, send);
-            SwingCardActivity.prnTime("waveFlowBegin isoCommandByApdu time = ");
+            ReadCardActivity.prnTime("waveFlowBegin isoCommandByApdu time = ");
             Log.i("piccIsoCommandDevice", "apduRecv = " + bcd2Str(resp.getDataOut()));
             System.arraycopy(resp.getDataOut(), 0, apduRecv.dataOut, 0, resp.getDataOut().length);
             apduRecv.lenOut = (short) resp.getDataOut().length;

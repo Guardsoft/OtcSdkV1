@@ -1,53 +1,80 @@
 package com.otc.sdk.pos.flows.sources.server.models.response.authorize;
 
-import com.google.gson.annotations.SerializedName;
 
-public class Order{
+import android.os.Parcel;
+import android.os.Parcelable;
 
-	@SerializedName("amount")
+public class Order implements Parcelable {
+
 	private double amount;
-
-	@SerializedName("traceNumber")
 	private String traceNumber;
-
-	@SerializedName("authorizationCode")
 	private String authorizationCode;
-
-	@SerializedName("channel")
 	private String channel;
-
-	@SerializedName("automatic")
 	private boolean automatic;
-
-	@SerializedName("actionDescription")
 	private String actionDescription;
-
-	@SerializedName("transactionDate")
 	private String transactionDate;
-
-	@SerializedName("transactionId")
 	private String transactionId;
-
-	@SerializedName("authorizedAmount")
 	private double authorizedAmount;
-
-	@SerializedName("installment")
 	private int installment;
-
-	@SerializedName("currency")
 	private String currency;
-
-	@SerializedName("actionCode")
 	private String actionCode;
-
-	@SerializedName("countable")
 	private boolean countable;
-
-	@SerializedName("purchaseNumber")
 	private String purchaseNumber;
-
-	@SerializedName("status")
 	private String status;
+
+	protected Order(Parcel in) {
+		amount = in.readDouble();
+		traceNumber = in.readString();
+		authorizationCode = in.readString();
+		channel = in.readString();
+		automatic = in.readByte() != 0;
+		actionDescription = in.readString();
+		transactionDate = in.readString();
+		transactionId = in.readString();
+		authorizedAmount = in.readDouble();
+		installment = in.readInt();
+		currency = in.readString();
+		actionCode = in.readString();
+		countable = in.readByte() != 0;
+		purchaseNumber = in.readString();
+		status = in.readString();
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeDouble(amount);
+		dest.writeString(traceNumber);
+		dest.writeString(authorizationCode);
+		dest.writeString(channel);
+		dest.writeByte((byte) (automatic ? 1 : 0));
+		dest.writeString(actionDescription);
+		dest.writeString(transactionDate);
+		dest.writeString(transactionId);
+		dest.writeDouble(authorizedAmount);
+		dest.writeInt(installment);
+		dest.writeString(currency);
+		dest.writeString(actionCode);
+		dest.writeByte((byte) (countable ? 1 : 0));
+		dest.writeString(purchaseNumber);
+		dest.writeString(status);
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	public static final Creator<Order> CREATOR = new Creator<Order>() {
+		@Override
+		public Order createFromParcel(Parcel in) {
+			return new Order(in);
+		}
+
+		@Override
+		public Order[] newArray(int size) {
+			return new Order[size];
+		}
+	};
 
 	public void setAmount(double amount){
 		this.amount = amount;

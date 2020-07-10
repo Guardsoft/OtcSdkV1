@@ -32,6 +32,7 @@ public class OtherDetectCard extends Service {
     boolean running = false;
     byte readType;
     byte iccSlot = 0;
+    String process;
     private Intent intent;
     //public int mOSPriority = android.os.Process.setThreadPriority();
 
@@ -80,6 +81,7 @@ public class OtherDetectCard extends Service {
          */
         readType = intent.getByteExtra("readType", (byte) 0x00);
         iccSlot = intent.getByteExtra("iccSlot", (byte) 0x00);
+        process = intent.getStringExtra("process");
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -121,6 +123,7 @@ public class OtherDetectCard extends Service {
                         picc.close();
                         intent = new Intent();
                         intent.setAction("ACTION_DETECT");
+                        intent.putExtra("process", process);
                         intent.putExtra("TYPE", EReaderType.ICC.getEReaderType());
                         sendBroadcast(intent);
                         //return DeviceRetCode.DEVICE_PICC_INSERTED_ICCARD;
@@ -141,6 +144,7 @@ public class OtherDetectCard extends Service {
                         picc.close();
                         intent = new Intent();
                         intent.setAction("ACTION_DETECT");
+                        intent.putExtra("process", process);
                         intent.putExtra("TYPE", EReaderType.MAG.getEReaderType());
                         intent.putExtra("TRK1", info.getTrack1());
                         intent.putExtra("TRK2", info.getTrack2());
