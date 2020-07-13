@@ -193,13 +193,46 @@ public class MainActivity extends AppCompatActivity {
 
     public void voidOrder(View view) {
 
-        Order order = new Order();
-        order.setPurchaseNumber("20200710101");
-        order.setAmount(35.00);
-        order.setCurrency("PEN");
-        order.setCountable(true);
+        final EditText tvAmount = new EditText(this);
+        tvAmount.setInputType(TYPE_CLASS_NUMBER | TYPE_NUMBER_FLAG_DECIMAL | TYPE_NUMBER_FLAG_SIGNED);
+        tvAmount.setHint("Monto");
 
-        confsdk.processVoidOrder(this, order);
+        final EditText tvPurchaseNumber = new EditText(this);
+        tvPurchaseNumber.setInputType(TYPE_CLASS_NUMBER);
+        tvPurchaseNumber.setHint("Número de pedido");
+
+        LinearLayout viewLayout = new LinearLayout(this);
+        viewLayout.setOrientation(LinearLayout.VERTICAL);
+        viewLayout.addView(tvAmount);
+        viewLayout.addView(tvPurchaseNumber);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("OTC DEMO")
+                .setMessage("Ingresa la orden")
+                .setView(viewLayout)
+                .setPositiveButton("Anular", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        double amount = Double.parseDouble(tvAmount.getText().toString().trim());
+                        int purchaseNumber = Integer.parseInt(tvPurchaseNumber.getText().toString().trim());
+
+                        Order order = new Order();
+                        order.setPurchaseNumber(purchaseNumber+"");
+                        order.setAmount(amount);
+                        order.setCurrency("PEN");
+                        order.setCountable(true);
+
+                        confsdk.processVoidOrder(MainActivity.this, order);
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .create();
+        dialog.show();
+
+
+
+
     }
 
     @Override
