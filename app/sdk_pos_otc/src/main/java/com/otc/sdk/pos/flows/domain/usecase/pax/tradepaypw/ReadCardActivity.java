@@ -1014,7 +1014,7 @@ public class ReadCardActivity extends AppCompatActivity implements View.OnClickL
         switch (process) {
             case "authorize"  : flowAuthorize(trackData2_38, emv, "contactless"); break;
             case "query"      : flowQuery(trackData2_38);                               break;
-            case "voidOrder" : flowVoidOrder(trackData2_38, "contactless");     break;
+            case "voidOrder"  : flowVoidOrder(trackData2_38, "contactless");      break;
         }
 
     }
@@ -1348,8 +1348,10 @@ public class ReadCardActivity extends AppCompatActivity implements View.OnClickL
         //System.exit(0);
         //finish();
         super.onDestroy();
+        if ( promptDialog != null && promptDialog.isShowing() ){
+            promptDialog.cancel();
+        }
     }
-
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

@@ -1,8 +1,10 @@
 package com.centinel.appclienteotc2;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.otc.sdk.pos.flows.ConfSdk;
@@ -20,14 +22,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
+
+import java.sql.Timestamp;
+
+import static android.text.InputType.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout layoutProgress;
 
     ConfSdk confsdk;
+    SharedPreferences prefsPax;
+    long mPurchaseNumber = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +53,38 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        prefsPax = getSharedPreferences("pax", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
+        mPurchaseNumber = prefsPax.getLong("purchase_number", 0);
+
+        if (mPurchaseNumber == 0) {
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            long time = timestamp.getTime()/1000;
+            mPurchaseNumber = time;
+        }else{
+            mPurchaseNumber++;
+        }
+
+        SharedPreferences.Editor editor = prefsPax.edit();
+        editor.putLong("purchase_number", mPurchaseNumber);
+        editor.apply();
+
         layoutProgress = findViewById(R.id.layout_progress);
 
-        confsdk = new ConfSdk();
+        ConfSdk.endpoint = "https://culqimpos.quiputech.com/";
+        ConfSdk.tenant = "culqi";
 
+        ConfSdk.username = "integracion@otcperu.com";
+        ConfSdk.password = "Peru2019$$";
+
+        //llave master
+        ConfSdk.keyTmk = 1; // default
+        //llaves
+        ConfSdk.keyData = 10;
+        ConfSdk.keyPin = 10;
+        ConfSdk.keyMac = 10;
+
+
+        confsdk = new ConfSdk();
     }
 
     @Override
@@ -73,18 +111,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void initialization(View view) {
 
-        ConfSdk.endpoint = "https://culqimpos.quiputech.com/";
-        ConfSdk.tenant = "culqi";
-
-        ConfSdk.username = "integracion@otcperu.com";
-        ConfSdk.password = "Peru2019$$";
-
-        //llave master
-        ConfSdk.keyTmk = 1; // default
-        //llaves
-        ConfSdk.keyData = 10;
-        ConfSdk.keyPin = 10;
-        ConfSdk.keyMac = 10;
+        Log.i(TAG, "config endpoint => " + ConfSdk.endpoint);
+        Log.i(TAG, "config tenant   => " + ConfSdk.tenant);
+        Log.i(TAG, "config keyTmk   => " + ConfSdk.keyTmk);
+        Log.i(TAG, "config keyData  => " + ConfSdk.keyData);
+        Log.i(TAG, "config keyPin   => " + ConfSdk.keyPin);
+        Log.i(TAG, "config keyMac   => " + ConfSdk.keyMac);
 
         layoutProgress.setVisibility(View.VISIBLE);
 
@@ -96,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
                 layoutProgress.setVisibility(View.GONE);
                 Log.i(TAG, "onSuccess: " + response);
                 ShowMessage(response.toString());
-
             }
 
             @Override
@@ -117,16 +148,13 @@ public class MainActivity extends AppCompatActivity {
         callback.retrieveList(this, 1 , 100, new QueryResponseHandler() {
             @Override
             public void onSuccess(RetrieveResponse response) {
-
                 layoutProgress.setVisibility(View.GONE);
                 Log.i(TAG, "onSuccess: " + response);
                 ShowMessage(response.toString());
-
             }
 
             @Override
             public void onError(CustomError error) {
-
                 layoutProgress.setVisibility(View.GONE);
                 Log.i(TAG, "error: " + error);
                 ShowMessage(error.toString());
@@ -137,13 +165,30 @@ public class MainActivity extends AppCompatActivity {
 
     public void authorization(View view) {
 
-        Order order = new Order();
-        order.setPurchaseNumber("20200710101");
-        order.setAmount(35.00);
-        order.setCurrency("PEN");
-        order.setCountable(true);
+        final EditText tvAmount = new EditText(this);
+        tvAmount.setInputType(TYPE_CLASS_NUMBER | TYPE_NUMBER_FLAG_DECIMAL | TYPE_NUMBER_FLAG_SIGNED);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("OTC DEMO")
+                .setMessage("Ingresa el monto a pagar")
+                .setView(tvAmount)
+                .setPositiveButton("Pagar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        double amount = Double.parseDouble(tvAmount.getText().toString().trim());
 
-        confsdk.processAuthorize(this, order);
+                        Order order = new Order();
+                        order.setPurchaseNumber(mPurchaseNumber + "");
+                        order.setAmount(amount);
+                        order.setCurrency("PEN");
+                        order.setCountable(true);
+
+                        confsdk.processAuthorize(MainActivity.this, order);
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .create();
+        dialog.show();
+
     }
 
     public void voidOrder(View view) {
@@ -157,12 +202,33 @@ public class MainActivity extends AppCompatActivity {
         confsdk.processVoidOrder(this, order);
     }
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == ConfSdk.ACTIVITY_SDK_AUTHORIZATION) {
+
+            if (resultCode == RESULT_OK && data != null) {
+                AuthorizeResponse resultData = (AuthorizeResponse) data.getExtras().getParcelable(ConfSdk.SUCCESS);
+                ShowMessage(resultData.toString());
+
+            }
+            if (resultCode == RESULT_CANCELED && data != null) {
+                CustomError resultData = (CustomError) data.getExtras().getParcelable(ConfSdk.ERROR);
+                ShowMessage(resultData.toString());
+            }
+        }
+
+        if (requestCode == ConfSdk.ACTIVITY_SDK_VOID_CANCEL) {
+            if (resultCode == RESULT_OK && data != null) {
+                String resultData = data.getExtras().getString(ConfSdk.SUCCESS);
+                ShowMessage(resultData);
+            }
+            if (resultCode == RESULT_CANCELED && data != null) {
+                CustomError resultData = (CustomError) data.getExtras().getParcelable(ConfSdk.ERROR);
+                ShowMessage(resultData.toString());
+            }
+        }
 
         if (requestCode == ConfSdk.ACTIVITY_SDK_QUERY) {
             if (resultCode == RESULT_OK && data != null) {
