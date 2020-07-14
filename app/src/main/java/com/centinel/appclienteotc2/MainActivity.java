@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -82,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
         ConfSdk.keyData = 10;
         ConfSdk.keyPin = 10;
         ConfSdk.keyMac = 10;
-
 
         confsdk = new ConfSdk();
     }

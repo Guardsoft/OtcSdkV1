@@ -75,7 +75,6 @@ public class DeviceCrypto {
 
         //**************************************************************************
 
-
         int slotTDK = 5;
         Device.writeTDK(slotTMK,slotTDK, bytesTPK);
         Device.getKCV_TDK((byte)slotTDK);

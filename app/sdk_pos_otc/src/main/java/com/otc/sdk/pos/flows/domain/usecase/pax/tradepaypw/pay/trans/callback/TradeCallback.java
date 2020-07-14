@@ -78,7 +78,7 @@ public class TradeCallback extends TransCallback {
                                         promptDialog.setImage(BitmapFactory.decodeResource(activity.getResources(),
                                                 R.drawable.ic16));
                                         promptDialog.setCancelable(false);
-                                        promptDialog.setTitleText(activity.getString(R.string.trans_sale));
+                                        //promptDialog.setTitleText(activity.getString(R.string.trans_sale));
                                     }
 
                                     promptDialog.setContentText(activity.getString(R.string.remove_card));
