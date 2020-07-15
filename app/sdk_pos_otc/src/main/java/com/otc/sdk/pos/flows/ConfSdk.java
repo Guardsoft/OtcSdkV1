@@ -62,27 +62,6 @@ public class ConfSdk {
     public static int keyTmk = 1; //default
 
 
-    public void processAuthorize(Activity activity, Order order){
-        Intent intent = new Intent(activity, ReadCardActivity.class);
-        intent.putExtra("order", order);
-        intent.putExtra("process", "authorize");
-        activity.startActivityForResult(intent, ACTIVITY_SDK_AUTHORIZATION);
-    }
-
-    public void processQuery(Activity activity){
-        Intent intent = new Intent(activity, ReadCardActivity.class);
-        intent.putExtra("process", "query");
-        activity.startActivityForResult(intent, ACTIVITY_SDK_QUERY);
-    }
-
-    public void processVoidOrder(Activity activity, Order order){
-        Intent intent = new Intent(activity, ReadCardActivity.class);
-        intent.putExtra("order", order);
-        intent.putExtra("process", "voidOrder");
-        activity.startActivityForResult(intent, ACTIVITY_SDK_VOID_CANCEL);
-    }
-
-
     private static void parseData(Map<String, Object> data) throws Exception {
 
         if (data != null) {

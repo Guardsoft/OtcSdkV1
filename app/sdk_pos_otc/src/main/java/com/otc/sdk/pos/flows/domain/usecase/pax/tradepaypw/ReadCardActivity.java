@@ -49,9 +49,6 @@ import com.otc.sdk.pos.flows.sources.config.StringResponseHandler;
 import com.otc.sdk.pos.flows.sources.server.models.request.authorize.Order;
 import com.otc.sdk.pos.flows.sources.server.models.response.authorize.AuthorizeResponse;
 import com.otc.sdk.pos.flows.sources.server.models.response.retrieve.RetrieveResponse;
-import com.otc.sdk.pos.flows.sources.server.rest.ProcessAuthorizeCallback;
-import com.otc.sdk.pos.flows.sources.server.rest.ProcessRetrieveListCallback;
-import com.otc.sdk.pos.flows.sources.server.rest.ProcessVoidOrderCallback;
 import com.otc.sdk.pos.flows.util.OtcUtil;
 import com.pax.dal.entity.EPiccType;
 import com.pax.dal.entity.EReaderType;
@@ -333,84 +330,17 @@ public class ReadCardActivity extends AppCompatActivity implements View.OnClickL
 
     private void flowVoidOrder(String track2, String type) {
 
-        com.otc.sdk.pos.flows.sources.server.models.request.cancel.Order orderLocal
-                = new com.otc.sdk.pos.flows.sources.server.models.request.cancel.Order();
 
-        orderLocal.setPurchaseNumber(orderClient.getPurchaseNumber());
-        orderLocal.setAmount(orderClient.getAmount());
-        orderLocal.setCurrency(orderClient.getCurrency());
-        orderLocal.setCountable(orderClient.isCountable());
-
-        ProcessVoidOrderCallback callback = new ProcessVoidOrderCallback();
-        callback.voidOrder(this, orderLocal, track2, type, new StringResponseHandler() {
-            @Override
-            public void onSuccess(String response) {
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("success", response);
-                setResult(RESULT_OK,returnIntent);
-                finish();
-            }
-
-            @Override
-            public void onError(CustomError error) {
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("error", error);
-                setResult(RESULT_CANCELED ,returnIntent);
-                finish();
-            }
-        });
 
     }
 
     private void flowQuery(String track2) {
-
-        ProcessRetrieveListCallback callback = new ProcessRetrieveListCallback();
-        callback.retrieveList(this, track2, 1, 100, new QueryResponseHandler() {
-            @Override
-            public void onSuccess(RetrieveResponse response) {
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("success", response);
-                setResult(RESULT_OK,returnIntent);
-                finish();
-            }
-
-            @Override
-            public void onError(CustomError error) {
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("error", error);
-                setResult(RESULT_CANCELED ,returnIntent);
-                finish();
-            }
-        });
 
 
     }
 
     private void flowAuthorize(String strTrack2, String emv, String type) {
 
-        ProcessAuthorizeCallback authorizeCallback = new ProcessAuthorizeCallback();
-        authorizeCallback.authorizationV2(this, OtcUtil.getTrack2(strTrack2), type, emv, orderClient, new AuthorizeResponseHandler() {
-            @Override
-            public void onSuccess(AuthorizeResponse response) {
-
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("success", response);
-                setResult(RESULT_OK,returnIntent);
-                finish();
-
-            }
-
-            @Override
-            public void onError(CustomError error) {
-
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("error", error);
-                setResult(RESULT_CANCELED ,returnIntent);
-                finish();
-
-            }
-        });
-        
     }
 
     private void toOnlineProc() {
@@ -1061,28 +991,7 @@ public class ReadCardActivity extends AppCompatActivity implements View.OnClickL
             promptDialog.setTitleText(getString(R.string.prompt_online));
         });
 
-        ProcessAuthorizeCallback authorizeCallback = new ProcessAuthorizeCallback();
-        authorizeCallback.authorizationV2(this, trackData2_38, "contactless", emv, orderClient, new AuthorizeResponseHandler() {
-            @Override
-            public void onSuccess(AuthorizeResponse response) {
 
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("success", response);
-                setResult(RESULT_OK,returnIntent);
-                finish();
-
-            }
-
-            @Override
-            public void onError(CustomError error) {
-
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("error", error);
-                setResult(RESULT_CANCELED ,returnIntent);
-                finish();
-
-            }
-        });
 
     }
 

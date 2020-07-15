@@ -19,16 +19,6 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".flows.domain.usecase.pax.tradepaypw.QueryActivity"
-            android:process="com.pax.detectCard"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".flows.domain.usecase.pax.tradepaypw.VoidActivity"
-            android:process="com.pax.detectCard"
-            android:screenOrientation="portrait" />
-
-        <activity
             android:name=".flows.domain.usecase.pax.tradepaypw.ConsumeActivity"
             android:process="com.pax.detectCard"
             android:screenOrientation="portrait" />
