@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.otc.sdk.pax.a920.OtcApplication;
 import com.otc.sdk.pos.flows.ConfSdk;
 import com.otc.sdk.pos.flows.sources.config.CustomError;
 import com.otc.sdk.pos.flows.sources.config.InitializeResponseHandler;
@@ -82,6 +83,13 @@ public class MainActivity extends AppCompatActivity {
         ConfSdk.keyMac = 10;
 
         confsdk = new ConfSdk();
+
+        //ejemplo de firma 1
+        OtcApplication.getCrypted().getMacSignature("texto a firmar");
+
+        //ejemplo de firma 2
+        int keyMac = 10;
+        OtcApplication.getCrypted().getMacSignature("texto a firmar", keyMac);
     }
 
     @Override
@@ -155,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
         textView.setMovementMethod(new ScrollingMovementMethod());
 
     }
+
 
 
 }
